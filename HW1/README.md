@@ -4,7 +4,7 @@
 - In this assignment, you will practice how to implement camera calibration.
 - For implement details, please refer to the slides 02-camera p.76-80.
 - We will provide an example code, you need to revise it by your calibration function.
-- **DO NOT** use the cv2.calibrateCamera or other calibration functions, you need to implement it from scratch.
+- **DO NOT** use the `cv2.calibrateCamera` or other calibration functions, you need to implement it from scratch.
 
 - In example code (camera_calibration.py), the code of loading data is provided. ✔ command: python camera_calibration.py
 Camera calibration:
@@ -23,7 +23,7 @@ Camera calibration:
   -   If you don’t know how to fix focus of your camera, please google it or ask TAs
 
 ### Submission
-- Deadline: 2021/3/22 23:55:00 pm
+- Deadline: 2021/3/22 23:55:00
 - Hand in your report and code on New E3.
 - The report should include:
   - your introduction
@@ -34,8 +34,9 @@ Camera calibration:
   - work assignment plan between team members.
 
 ## To do
-- [x] Code
+- [ ] Code
   - Eugene Yang (NO WOOD:rage::cursing_face::cursing_face:
+  - [ ] Use `cv2.findHomography` or not
 - [ ] Collect our own data
 - [ ] Paper
   - LaTeX on Overleaf and back up in github?  
