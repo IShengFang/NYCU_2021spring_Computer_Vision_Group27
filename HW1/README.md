@@ -38,6 +38,7 @@ Camera calibration:
   - Eugene Yang (NO WOOD:rage::cursing_face::cursing_face:
 - [ ] Collect our own data
 - [ ] Paper
+  - LaTeX on Overleaf and back up in github?  
   - [ ] Introduction
   - [ ] Implementation procedure
   - [ ] Experimental result
