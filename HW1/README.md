@@ -44,3 +44,7 @@ Camera calibration:
   - [ ] Experimental result
   - [ ] Discussion
   - [ ] Conclusion
+
+## Countdown
+
+<script>(function(d, s, id) {var js, timetacojs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) return;js = d.createElement(s); js.id = id;js.src ='https://www.timetaco.com/static/js/embed.js';timetacojs.parentNode.insertBefore(js, timetacojs);}(document, 'script', 'timetaco-jssdk'));<\/script><div class='timetaco-list' data-timetacoid='nqgmhr'></div>
