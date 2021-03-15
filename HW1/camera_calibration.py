@@ -72,6 +72,7 @@ def calibration(objpoints, imgpoints):
 
     return K, Rt_mats
 
+
 # prepare object points, like (0, 0, 0), (1, 0, 0), (2, 0, 0) ...., (6, 5, 0)
 # (8, 6) is for the given testing images.
 # If you use the another data (e.g. pictures you take by your smartphone), 
@@ -87,27 +88,30 @@ objpoints = [] # 3d points in real world space
 imgpoints = [] # 2d points in image plane.
 
 # Make a list of calibration images
+#images = glob.glob('data/*.jpg')
+#images = glob.glob('af_tele_iphone11pro/*.JPG')
 images = glob.glob('data/*.jpg')
+
 
 # Step through the list and search for chessboard corners
 print('Start finding chessboard corners...')
-# for idx, fname in enumerate(images):
-#     img = cv2.imread(fname)
-#     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#     plt.imshow(gray)
+for idx, fname in enumerate(images):
+    img = cv2.imread(fname)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    plt.imshow(gray)
 
-#     # Find the chessboard corners
-#     print('find the chessboard corners of', fname)
-#     ret, corners = cv2.findChessboardCorners(gray, (corner_x, corner_y), None)
+    # Find the chessboard corners
+    print('find the chessboard corners of', fname)
+    ret, corners = cv2.findChessboardCorners(gray, (corner_x, corner_y), None)
 
-#     # If found, add object points, image points
-#     if ret == True:
-#         objpoints.append(objp)
-#         imgpoints.append(corners)
+    # If found, add object points, image points
+    if ret == True:
+        objpoints.append(objp)
+        imgpoints.append(corners)
 
-#         # Draw and display the corners
-#         cv2.drawChessboardCorners(img, (corner_x, corner_y), corners, ret)
-#         plt.imshow(img)
+        # Draw and display the corners
+        cv2.drawChessboardCorners(img, (corner_x, corner_y), corners, ret)
+        plt.imshow(img)
 
 #######################################################################################################
 #                                Homework 1 Camera Calibration                                        #
@@ -133,10 +137,10 @@ print('Camera calibration...')
 '''
 Write your code here
 '''
-objpoints = np.load('objpoints.npy')
-imgpoints = np.load('imgpoints.npy')
-# objpoints = np.array(objpoints)
-# imgpoints = np.array(imgpoints).reshape((len(imgpoints), (corner_x*corner_y), 2))
+# objpoints = np.load('objpoints.npy')
+# imgpoints = np.load('imgpoints.npy')
+objpoints = np.array(objpoints)
+imgpoints = np.array(imgpoints).reshape((len(imgpoints), (corner_x*corner_y), 2))
 K, Rt_mats = calibration(objpoints, imgpoints)
 mtx = K
 extrinsics = Rt_mats
