@@ -100,7 +100,7 @@ if __name__ == '__main__':
         objpoints = [] # 3d points in real world space
         imgpoints = [] # 2d points in image plane.
 
-        images = glob.glob(f'{opts.image_dir}/*.jpg')
+        images = glob.glob(f'{opts.image_dir}/*.JPG')
 
         # Step through the list and search for chessboard corners
         print('Start finding chessboard corners...')
@@ -148,7 +148,7 @@ if __name__ == '__main__':
     # In practice, you'll derive extrinsics matrixes directly. The shape must be [pts_num, 3, 4], and use them to plot.
 
     if opts.cv2_calibrate:
-        images = glob.glob(f'{opts.image_dir}/*.jpg')
+        images = glob.glob(f'{opts.image_dir}/*.JPG')
         img = cv2.imread(images[0])
         img_size = (img.shape[1], img.shape[0])
         ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, img_size, None, None)
