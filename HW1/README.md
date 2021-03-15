@@ -34,14 +34,24 @@ Camera calibration:
   - work assignment plan between team members.
 
 ## To do
-- [ ] Code
+- [x] Code
   - Eugene Yang (NO WOOD:rage::cursing_face::cursing_face:
   - [ ] Use `cv2.findHomography` or not
 - [ ] Collect our own data
+  - AF 
+  - MF
+  - 11 pro
 - [ ] Paper
   - LaTeX on Overleaf and back up in github?  
   - [ ] Introduction
+    - Jacky
   - [ ] Implementation procedure
+    - Eugene
   - [ ] Experimental result
+    - Ethan
   - [ ] Discussion
+    - Ethan
   - [ ] Conclusion
+    - Jacky
+
+CPT 1: 3/17
