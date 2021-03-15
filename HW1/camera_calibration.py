@@ -12,7 +12,7 @@ def calibration(objpoints, imgpoints):
     # 02-camera.pdf p.74
     H_mats = []
     for objpts, imgpts in zip(objpoints, imgpoints):
-        # M, mask = cv2.findHomography(cv2.UMat(objpts), cv2.UMat(imgpts))
+        M, mask = cv2.findHomography(cv2.UMat(objpts), cv2.UMat(imgpts))
         P = np.zeros((objpts.shape[0]*2, 9))
         for i, (objpt, imgpt) in enumerate(zip(objpts, imgpts)):
             PT_i = np.array([objpt[0], objpt[1], 1])
@@ -55,13 +55,13 @@ def calibration(objpoints, imgpoints):
 
     # 02-camera.pdf p.79
     KT_inv = np.linalg.cholesky(B)
+    K_inv = KT_inv.T
     K = np.linalg.inv(KT_inv.T)
     K /= K[2,2]
 
     # 02-camera.pdf p.80
     Rt_mats = np.zeros((len(H_mats), 3, 4))
     for i, H in enumerate(H_mats):
-        K_inv = np.linalg.inv(K)
         l = 1 / np.linalg.norm(K_inv@H[:,0])
         r1 = l * K_inv @ H[:,0]
         r2 = l * K_inv @ H[:,1]
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     parser.add_argument('--image_dir', type=str, default='data')
     opts = parser.parse_args()
 
-    # prepare object points, like (0, 0, 0), (1, 0, 0), (2, 0, 0) ...., (6, 5, 0)
+    # prepare object points, like (0, 0, 0), (1, 0, 0), (2, 0, 0) ...., (6, 6, 0)
     # (8, 6) is for the given testing images.
     # If you use the another data (e.g. pictures you take by your smartphone), 
     # you need to set the corresponding numbers.
@@ -93,14 +93,13 @@ if __name__ == '__main__':
     objp = np.zeros((corner_x*corner_y, 3), np.float32)
     objp[:, :2] = np.mgrid[0:corner_x, 0:corner_y].T.reshape(-1, 2)
 
+    images = list(set(glob.glob(f'{opts.image_dir}/*.JPG')+glob.glob(f'{opts.image_dir}/*.jpg')))
 
     # Make a list of calibration images
     if not opts.load_npy:
         # Arrays to store object points and image points from all the images.
         objpoints = [] # 3d points in real world space
         imgpoints = [] # 2d points in image plane.
-
-        images = glob.glob(f'{opts.image_dir}/*.JPG')
 
         # Step through the list and search for chessboard corners
         print('Start finding chessboard corners...')
@@ -148,7 +147,6 @@ if __name__ == '__main__':
     # In practice, you'll derive extrinsics matrixes directly. The shape must be [pts_num, 3, 4], and use them to plot.
 
     if opts.cv2_calibrate:
-        images = glob.glob(f'{opts.image_dir}/*.JPG')
         img = cv2.imread(images[0])
         img_size = (img.shape[1], img.shape[0])
         ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, img_size, None, None)
