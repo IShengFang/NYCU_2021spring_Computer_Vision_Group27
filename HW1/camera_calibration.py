@@ -12,17 +12,17 @@ def calibration(objpoints, imgpoints):
     # 02-camera.pdf p.74
     H_mats = []
     for objpts, imgpts in zip(objpoints, imgpoints):
-        M, mask = cv2.findHomography(cv2.UMat(objpts), cv2.UMat(imgpts))
+        # H, mask = cv2.findHomography(cv2.UMat(objpts), cv2.UMat(imgpts))
         P = np.zeros((objpts.shape[0]*2, 9))
         for i, (objpt, imgpt) in enumerate(zip(objpts, imgpts)):
             PT_i = np.array([objpt[0], objpt[1], 1])
-            P[i*2,:] = [*PT_i, 0, 0, 0, *(-imgpt[0]*PT_i)]
-            P[i*2+1,:] = [0, 0, 0, *PT_i, *(-imgpt[1]*PT_i)]
+            P[i*2,:] = [*(-1*PT_i), 0, 0, 0, *(imgpt[0]*PT_i)]
+            P[i*2+1,:] = [0, 0, 0, *(-1*PT_i), *(imgpt[1]*PT_i)]
         U, D, VT = np.linalg.svd(P, full_matrices=False)
-        m = VT.T[:,-1]
-        m /= m[-1]
-        M = m.reshape(3, 3)
-        H_mats.append(M)
+        h = VT.T[:,-1]
+        h /= h[-1]
+        H = h.reshape(3, 3)
+        H_mats.append(H)
 
     # 02-camera.pdf p.80
     V = np.zeros((2*len(H_mats), 6))
