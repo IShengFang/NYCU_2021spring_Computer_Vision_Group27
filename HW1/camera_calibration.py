@@ -93,13 +93,13 @@ if __name__ == '__main__':
     objp = np.zeros((corner_x*corner_y, 3), np.float32)
     objp[:, :2] = np.mgrid[0:corner_x, 0:corner_y].T.reshape(-1, 2)
 
-    # Arrays to store object points and image points from all the images.
-    objpoints = [] # 3d points in real world space
-    imgpoints = [] # 2d points in image plane.
 
     # Make a list of calibration images
-    #images = glob.glob('af_tele_iphone11pro/*.JPG')
     if not opts.load_npy:
+        # Arrays to store object points and image points from all the images.
+        objpoints = [] # 3d points in real world space
+        imgpoints = [] # 2d points in image plane.
+
         images = glob.glob(f'{opts.image_dir}/*.jpg')
 
         # Step through the list and search for chessboard corners
@@ -107,7 +107,7 @@ if __name__ == '__main__':
         for idx, fname in enumerate(images):
             img = cv2.imread(fname)
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            plt.imshow(gray)
+            # plt.imshow(gray)
 
             # Find the chessboard corners
             print('find the chessboard corners of', fname)
@@ -120,7 +120,10 @@ if __name__ == '__main__':
 
                 # Draw and display the corners
                 cv2.drawChessboardCorners(img, (corner_x, corner_y), corners, ret)
-                plt.imshow(img)
+                # plt.imshow(img)
+            else:
+                print('cannot find the chessboard corners of', fname)
+
         objpoints = np.array(objpoints)
         imgpoints = np.array(imgpoints).reshape((len(imgpoints), (corner_x*corner_y), 2))
         np.save(f'{opts.image_dir}_objpoints.npy', objpoints)
