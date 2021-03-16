@@ -8,7 +8,7 @@ import camera_calibration_show_extrinsics as show
 from argparse import ArgumentParser
 
 
-def calibration(objpoints, imgpoints):
+def get_homography(objpoints, imgpoints):
     # 02-camera.pdf p.74
     H_mats = []
     for objpts, imgpts in zip(objpoints, imgpoints):
@@ -24,6 +24,10 @@ def calibration(objpoints, imgpoints):
         H = h.reshape(3, 3)
         H_mats.append(H)
 
+    return H_mats
+
+
+def get_intrinsic(H_mats):
     # 02-camera.pdf p.80
     V = np.zeros((2*len(H_mats), 6))
     for i, H in enumerate(H_mats):
@@ -59,6 +63,10 @@ def calibration(objpoints, imgpoints):
     K = np.linalg.inv(KT_inv.T)
     K /= K[2,2]
 
+    return K, K_inv
+
+
+def get_extrinsic(H_mats, K, K_inv):
     # 02-camera.pdf p.80
     Rt_mats = np.zeros((len(H_mats), 3, 4))
     for i, H in enumerate(H_mats):
@@ -71,6 +79,13 @@ def calibration(objpoints, imgpoints):
         Rt = np.vstack((r1, r2, r3, t)).T
         Rt_mats[i,:,:] = Rt
 
+    return Rt_mats
+
+
+def calibration(objpoints, imgpoints):
+    H_mats = get_homography(objpoints, imgpoints)
+    K, K_inv = get_intrinsic(H_mats)
+    Rt_mats = get_extrinsic(H_mats, K, K_inv)
     return K, Rt_mats
 
 
