@@ -136,10 +136,11 @@ if __name__ == '__main__':
 
                 # Draw and display the corners
                 cv2.drawChessboardCorners(img, (corner_x, corner_y), corners, ret)
-                # plt.imshow(img)
+                #plt.imshow(img)
                 folder = fname.split('/')[0]
                 os.makedirs(f'plot_corners/{folder}', exist_ok=True)
-                plt.savefig(f'plot_corners/{fname}', dpi=150)
+                #plt.savefig(f'plot_corners/{fname}')
+                cv2.imwrite(f'plot_corners/{fname}', img)
             else:
                 print('cannot find the chessboard corners of', fname)
 
