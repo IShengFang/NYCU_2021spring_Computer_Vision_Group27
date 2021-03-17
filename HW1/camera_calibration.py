@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+import os
 import cv2
 import glob
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-import camera_calibration_show_extrinsics as show
 from argparse import ArgumentParser
+
+import camera_calibration_show_extrinsics as show
 
 
 def get_homography(objpoints, imgpoints):
@@ -135,6 +137,9 @@ if __name__ == '__main__':
                 # Draw and display the corners
                 cv2.drawChessboardCorners(img, (corner_x, corner_y), corners, ret)
                 # plt.imshow(img)
+                folder = fname.split('/')[0]
+                os.makedirs(f'plot_corners/{folder}', exist_ok=True)
+                plt.savefig(f'plot_corners/{fname}', dpi=150)
             else:
                 print('cannot find the chessboard corners of', fname)
 
