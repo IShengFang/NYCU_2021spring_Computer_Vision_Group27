@@ -40,6 +40,7 @@ Camera calibration:
 - [x] Collect our own data
   - AF w/ 11 pro
   - MF w/ 11 pro
+  - (t)ele, (w)ide, (u)ltra wide
 - [x] Paper
   - LaTeX on Overleaf and back up in github?  
   - [x] Introduction
