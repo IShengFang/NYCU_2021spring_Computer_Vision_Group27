@@ -35,7 +35,7 @@ Camera calibration:
 
 ## To do
 - [x] Code
-  - Eugene Yang (NO WOOD:rage::cursing_face::cursing_face:
+  - Eugene Yang (NO WOOD:rage::cursing_face::cursing_face::+1::clap::+1::clap:
   - [x] Use `cv2.findHomography` or not -> use our own
 - [x] Collect our own data
   - AF
