@@ -53,5 +53,7 @@ Camera calibration:
   - [x] Conclusion
     - Jacky
 
+---
+
 - [x] CPT 1: 3/17
 - [x] FINISH: 3/18
