@@ -37,19 +37,19 @@ Camera calibration:
 - [x] Code
   - Eugene Yang (NO WOOD:rage::cursing_face::cursing_face:
   - [x] Use `cv2.findHomography` or not -> use our own
-- [ ] Collect our own data
+- [x] Collect our own data
   - AF
   - MF
   - 11 pro
 - [ ] Paper
   - LaTeX on Overleaf and back up in github?  
-  - [ ] Introduction
+  - [x] Introduction
     - Jacky
-  - [ ] Implementation procedure
+  - [x] Implementation procedure
     - Eugene
   - [ ] Experimental result
     - Ethan
-  - [ ] Discussion
+  - [x] Discussion
     - Ethan
   - [ ] Conclusion
     - Jacky
