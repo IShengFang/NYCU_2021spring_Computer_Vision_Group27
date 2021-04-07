@@ -4,13 +4,6 @@ import math
 import imageio
 import matplotlib.pyplot as plt
 from skimage.transform import resize
-def makeGaussianFilter(n_row, n_col, sigma, highPass=True):
-    center_x = int(n_row/2) + 1 if n_row % 2 == 1 else int(n_row/2)
-    center_y = int(n_col/2) + 1 if n_col % 2 == 1 else int(n_col/2)
-    def gaussian(i, j):
-        coefficient = math.exp(-1.0 * ((i - center_x) **2 + (j - center_y)**2) / (2 * sigma**2))
-        return 1 - coefficient if highPass else coefficient
-    return np.array([[gaussian(i, j) for j in range(n_col)] for i in range(n_row)])
 
 def makeIdealFilter(n_row, n_col, sigma, highPass=True):
     center_x = int(n_row/2) + 1 if n_row % 2 == 1 else int(n_row/2)
@@ -19,6 +12,14 @@ def makeIdealFilter(n_row, n_col, sigma, highPass=True):
         coefficient = math.sqrt((i - center_x)**2 + (j - center_y)**2)
         return 1 - coefficient if highPass else coefficient
     return np.array([[ideal(i, j) for j in range(n_col)] for i in range(n_row)])
+
+def makeGaussianFilter(n_row, n_col, sigma, highPass=True):
+    center_x = int(n_row/2) + 1 if n_row % 2 == 1 else int(n_row/2)
+    center_y = int(n_col/2) + 1 if n_col % 2 == 1 else int(n_col/2)
+    def gaussian(i, j):
+        coefficient = math.exp(-1.0 * ((i - center_x) **2 + (j - center_y)**2) / (2 * sigma**2))
+        return 1 - coefficient if highPass else coefficient
+    return np.array([[gaussian(i, j) for j in range(n_col)] for i in range(n_row)])
 
 def filter(image, sigma,flag,isHigh):
     shiftedDFT = fftshift(fft2(image))
