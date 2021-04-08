@@ -57,35 +57,7 @@ def clip_and_cast(array):
     return array.clip(0, 255).astype(np.uint8)
 
 
-if __name__=='__main__':
-    img1_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_after.jpg'
-    img2_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_before.jpg'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/1_bicycle.bmp'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/1_motorcycle.bmp'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/2_bird.bmp'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/2_plane.bmp'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/3_cat.bmp'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/3_dog.bmp'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/4_einstein.bmp'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/4_marilyn.bmp'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/5_fish.bmp'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/5_submarine.bmp'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_after.jpg'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_before.jpg'
-    filter_type = 'ideal'
-
-    img1 = cv2.imread(img1_path, cv2.IMREAD_COLOR)[:,:,::-1]
-    img2 = cv2.imread(img2_path, cv2.IMREAD_COLOR)[:,:,::-1]
-
-    img1, img2 = resize(img1, img2)
-    assert img1.shape == img2.shape, f'shape of image1 {img1.shape} != shape of image2 {img2.shape}'
-
-    _, img1_mag, _, img1_filtered_mag, img1_filtered_channel = filtering(img1, 0.03, False, filter_type)
-    filtered_img1 = np.stack(img1_filtered_channel, axis=2)
-    _, img2_mag, _, img2_filtered_mag, img2_filtered_channel = filtering(img2, 0.05, True, filter_type)
-    filtered_img2 = np.stack(img2_filtered_channel, axis=2)
-
-    # before/after hybrid
+def plot_hybrid(img1, img2, filtered_img1, filtered_img2, filename):
     plt.subplot(2, 3, 1)
     plt.imshow(img1)
     plt.title('Low-pass (origin)'), plt.xticks([], []), plt.yticks([], [])
@@ -108,9 +80,10 @@ if __name__=='__main__':
     plt.title('Hybrid'), plt.xticks([], []), plt.yticks([], [])
 
     plt.tight_layout()
-    plt.savefig('hybrid.png', dpi=300), plt.clf()
+    plt.savefig(filename, dpi=300), plt.clf()
 
-    # before/after filtering
+
+def plot_filtering(img1, img2, img1_mag, img2_mag, filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag):
     color = ['R', 'G', 'B']
     fs = 9
 
@@ -130,7 +103,7 @@ if __name__=='__main__':
     plt.xticks([], []), plt.yticks([], [])
     for i in range(3):
         plt.subplot(4, 4, 4+i+2)
-        plt.imshow(img1_filtered_mag[i], cmap='gray')
+        plt.imshow(filtered_img1_mag[i], cmap='gray')
         plt.title(color[i], fontsize=fs)
         plt.xticks([], []), plt.yticks([], [])
 
@@ -150,8 +123,43 @@ if __name__=='__main__':
     plt.xticks([], []), plt.yticks([], [])
     for i in range(3):
         plt.subplot(4, 4, 12+i+2)
-        plt.imshow(img2_filtered_mag[i], cmap='gray')
+        plt.imshow(filtered_img2_mag[i], cmap='gray')
         plt.title(color[i], fontsize=fs)
         plt.xticks([], []), plt.yticks([], [])
 
     plt.savefig('filtering.png', dpi=300), plt.clf()
+
+
+if __name__=='__main__':
+    img1_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_before.jpg'
+    img2_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_after.jpg'
+    # img1_path = './hw2_data/task1,2_hybrid_pyramid/1_bicycle.bmp'
+    # img2_path = './hw2_data/task1,2_hybrid_pyramid/1_motorcycle.bmp'
+    # img1_path = './hw2_data/task1,2_hybrid_pyramid/2_bird.bmp'
+    # img2_path = './hw2_data/task1,2_hybrid_pyramid/2_plane.bmp'
+    # img1_path = './hw2_data/task1,2_hybrid_pyramid/3_cat.bmp'
+    # img2_path = './hw2_data/task1,2_hybrid_pyramid/3_dog.bmp'
+    # img1_path = './hw2_data/task1,2_hybrid_pyramid/4_einstein.bmp'
+    # img2_path = './hw2_data/task1,2_hybrid_pyramid/4_marilyn.bmp'
+    # img1_path = './hw2_data/task1,2_hybrid_pyramid/5_fish.bmp'
+    # img2_path = './hw2_data/task1,2_hybrid_pyramid/5_submarine.bmp'
+    # img1_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_before.jpg'
+    # img2_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_after.jpg'
+    filter_type = 'ideal'
+
+    img1 = cv2.imread(img1_path, cv2.IMREAD_COLOR)[:,:,::-1]
+    img2 = cv2.imread(img2_path, cv2.IMREAD_COLOR)[:,:,::-1]
+
+    img1, img2 = resize(img1, img2)
+    assert img1.shape == img2.shape, f'shape of image1 {img1.shape} != shape of image2 {img2.shape}'
+
+    _, img1_mag, _, filtered_img1_mag, filtered_img1_channel = filtering(img1, 0.03, False, filter_type)
+    filtered_img1 = np.stack(filtered_img1_channel, axis=2)
+    _, img2_mag, _, filtered_img2_mag, filtered_img2_channel = filtering(img2, 0.05, True, filter_type)
+    filtered_img2 = np.stack(filtered_img2_channel, axis=2)
+
+    # before/after hybrid
+    plot_hybrid(img1, img2, filtered_img1, filtered_img2, 'hybrid.png')
+
+    # before/after filtering
+    plot_filtering(img1, img2, img1_mag, img2_mag, filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag)
