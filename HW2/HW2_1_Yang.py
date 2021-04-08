@@ -83,7 +83,10 @@ def plot_hybrid(img1, img2, filtered_img1, filtered_img2, filename):
     plt.savefig(filename, dpi=300), plt.clf()
 
 
-def plot_filtering(img1, img2, img1_mag, img2_mag, filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag):
+def plot_filtering(
+        img1, img2, img1_mag, img2_mag,
+        filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag,
+        filename):
     color = ['R', 'G', 'B']
     fs = 9
 
@@ -127,7 +130,7 @@ def plot_filtering(img1, img2, img1_mag, img2_mag, filtered_img1, filtered_img2,
         plt.title(color[i], fontsize=fs)
         plt.xticks([], []), plt.yticks([], [])
 
-    plt.savefig('filtering.png', dpi=300), plt.clf()
+    plt.savefig(filename, dpi=300), plt.clf()
 
 
 if __name__=='__main__':
@@ -162,4 +165,7 @@ if __name__=='__main__':
     plot_hybrid(img1, img2, filtered_img1, filtered_img2, 'hybrid.png')
 
     # before/after filtering
-    plot_filtering(img1, img2, img1_mag, img2_mag, filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag)
+    plot_filtering(
+        img1, img2, img1_mag, img2_mag,
+        filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag,
+        'filtering.png')
