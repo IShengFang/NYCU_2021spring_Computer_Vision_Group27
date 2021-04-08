@@ -54,7 +54,7 @@ def gaussian_pyramid(img, num_layers, kernel):
 
 def magnitude_spectrum(img):
     fshift = fftshift(fft2(img))
-    return np.log(np.abs(fshift))
+    return np.log(np.abs(fshift)+1e-5)
 
 
 def laplacian_pyramid(g_pyramid, num_layers, kernel):
