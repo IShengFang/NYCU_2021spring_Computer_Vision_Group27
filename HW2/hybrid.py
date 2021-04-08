@@ -35,7 +35,7 @@ def idealfilter(image , sigma , highlow=True):
             return entry
         if highlow==False:
             return 1 - entry
-    center_x , center_y = decide_size(image,4)
+    center_x , center_y = decide_size(image,2)
     shift_DFT = fftshift(fft2(image))
     filter_DFT = shift_DFT * (np.array([[ideal(i, j) for j in range(image.shape[1])] for i in range(image.shape[0])]))
     return np.real(ifft2(ifftshift(filter_DFT)))
