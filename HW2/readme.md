@@ -4,10 +4,10 @@
 
 - Change the following variables for different experiments
     - image paths in `input()` function
-    - gaussian_high_sigma
-    - gaussian_low_sigma
-    - ideal_high_sigma
-    - ideal_low_sigma
+    - `gaussian_high_sigma`
+    - `gaussian_low_sigma`
+    - `ideal_high_sigma`
+    - `ideal_low_sigma`
 
 ### HW2_1.py
 
