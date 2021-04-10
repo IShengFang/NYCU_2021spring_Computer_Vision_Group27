@@ -6,7 +6,7 @@ import numpy as np
 from numpy.linalg import norm
 from matplotlib import pyplot as plt
 
-from HW2_2 import gaussian_filter, gaussian_pyramid, laplacian_pyramid
+from HW2_2 import gaussian_filter, gaussian_pyramid
 
 
 def remove_white_border(img):
@@ -28,11 +28,29 @@ def remove_black_border(img):
     return img[h-new_h:new_h,w-new_w:new_w]
 
 
-def mse(img1, img2):
-    return np.sum((img1-img2)**2)
+def euclidean(img1, img2):
+    return np.sqrt(np.sum((img1-img2)**2))
+
+
+def manhattan(img1, img2):
+    return np.sum(np.abs(img1-img2))
+
 
 def ncc(img1, img2):
-    return ((img1/norm(img1))*(img2/norm(img2))).sum()
+    return -1 * ((img1/norm(img1))*(img2/norm(img2))).sum()
+
+
+def ssim(img1, img2):
+    c1 = 0.01**2
+    c2 = 0.03**2
+    mu_img1 = np.mean(img1)
+    mu_img2 = np.mean(img2)
+    std_img1 = np.sqrt(np.mean(img1**2)-mu_img1**2)
+    std_img2 = np.sqrt(np.mean(img2**2)-mu_img2**2)
+    cov = np.mean(img1*img2) - mu_img1*mu_img2
+    numerator = (2*mu_img1*mu_img2+c1) * (2*cov+c1)
+    denominator = (mu_img1**2+mu_img2**2+c1) * (std_img1**2+std_img2**2+c2)
+    return -1 * numerator / denominator
 
 
 def shift(img, displ):
@@ -154,12 +172,15 @@ if __name__ == '__main__':
     # img_path = './hw2_data/task3_colorizing/train.tif'
     # img_path = './hw2_data/task3_colorizing/village.tif'
     # img_path = './hw2_data/task3_colorizing/workshop.tif'
+    base_channel = 'g'
+    pyramid_layer = 6
+
     img_name = re.sub(r'\..+', '', img_path.split('/')[-1])
     save_dir = os.path.join('task3_result', img_name)
     os.makedirs(save_dir, exist_ok=True)
 
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-    print('Image shape:', img.shape)
+    print('Image shape (h, w):', img.shape)
 
     plt.subplot(1, 2, 1)
     plt.imshow(img, cmap='gray'), plt.xticks([]), plt.yticks([])
@@ -172,7 +193,6 @@ if __name__ == '__main__':
 
     h, w = img.shape
     h = h // 3
-
     b = remove_black_border(img[:h,:])
     g = remove_black_border(img[h:h*2,:])
     r = remove_black_border(img[h*2:h*3,:])
@@ -181,4 +201,5 @@ if __name__ == '__main__':
     cv2.imwrite(os.path.join(save_dir, f'{img_name}_no-align.png'), np.stack((b, g, r), axis=2))
 
     # with alignment
-    result = colorize(save_dir, img_name, r, g, b, 'g', 6, mse)
+    # ssim, euclidean, manhattan, ncc
+    result = colorize(save_dir, img_name, r, g, b, base_channel, pyramid_layer, euclidean)

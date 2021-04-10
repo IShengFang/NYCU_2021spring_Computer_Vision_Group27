@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+import os
 import re
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
-from numpy.fft import fft2, ifft2, fftshift, ifftshift
+from numpy.fft import fft2, ifft2, fftshift
 
 
 # def gaussian_filter(x, sigma):
@@ -73,11 +74,14 @@ def laplacian_pyramid(g_pyramid, num_layers, kernel):
 
 
 if __name__ == '__main__':
+    img_path = './hw2_data/task1,2_hybrid_pyramid/4_marilyn.bmp'
     num_layers = 5
     filter_size = 5
     filter_sigma = 1.0
 
-    img_path = './hw2_data/task1,2_hybrid_pyramid/4_marilyn.bmp'
+    img_name = re.sub(r'\..+', '', img_path.split('/')[-1])
+    os.makedirs('task2_result', exist_ok=True)
+
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
     kernel = gaussian_filter(filter_size, filter_sigma)
@@ -117,5 +121,4 @@ if __name__ == '__main__':
         if i == num_layers-1:
             plt.gca().text(1.3, 0.5, 'Laplacian', transform=plt.gca().transAxes, **text_kwargs)
 
-    img_name = re.sub(r'\..+', '', img_path.split('/')[-1])
-    plt.savefig(f'{img_name}_pyramid.png', dpi=300)
+    plt.savefig(os.path.join('task2_result', f'{img_name}_pyramid.png'), dpi=300)

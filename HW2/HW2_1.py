@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+import re
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -57,7 +59,7 @@ def clip_and_cast(array):
     return array.clip(0, 255).astype(np.uint8)
 
 
-def plot_hybrid(img1, img2, filtered_img1, filtered_img2, filename):
+def plot_hybrid(img1, img2, filtered_img1, filtered_img2, save_path):
     plt.subplot(2, 3, 1)
     plt.imshow(img1)
     plt.title('Low-pass (origin)'), plt.xticks([], []), plt.yticks([], [])
@@ -80,13 +82,13 @@ def plot_hybrid(img1, img2, filtered_img1, filtered_img2, filename):
     plt.title('Hybrid'), plt.xticks([], []), plt.yticks([], [])
 
     plt.tight_layout()
-    plt.savefig(filename, dpi=300), plt.clf()
+    plt.savefig(save_path, dpi=300), plt.clf()
 
 
 def plot_filtering(
         img1, img2, img1_mag, img2_mag,
         filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag,
-        filename):
+        save_path):
     color = ['R', 'G', 'B']
     fs = 9
 
@@ -130,14 +132,14 @@ def plot_filtering(
         plt.title(color[i], fontsize=fs)
         plt.xticks([], []), plt.yticks([], [])
 
-    plt.savefig(filename, dpi=300), plt.clf()
+    plt.savefig(save_path, dpi=300), plt.clf()
 
 
 if __name__=='__main__':
-    img1_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_before.jpg'
-    img2_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_after.jpg'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/1_bicycle.bmp'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/1_motorcycle.bmp'
+    # img1_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_before.jpg'
+    # img2_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_after.jpg'
+    img1_path = './hw2_data/task1,2_hybrid_pyramid/1_bicycle.bmp'
+    img2_path = './hw2_data/task1,2_hybrid_pyramid/1_motorcycle.bmp'
     # img1_path = './hw2_data/task1,2_hybrid_pyramid/2_bird.bmp'
     # img2_path = './hw2_data/task1,2_hybrid_pyramid/2_plane.bmp'
     # img1_path = './hw2_data/task1,2_hybrid_pyramid/3_cat.bmp'
@@ -148,7 +150,13 @@ if __name__=='__main__':
     # img2_path = './hw2_data/task1,2_hybrid_pyramid/5_submarine.bmp'
     # img1_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_before.jpg'
     # img2_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_after.jpg'
+    # ideal, gaussian
     filter_type = 'ideal'
+    low_pass_ratio = 0.04
+    high_pass_ratio = 0.05
+
+    set_idx = re.sub(r'\..+', '', img1_path.split('/')[-1]).split('_')[0]
+    os.makedirs('task1_result', exist_ok=True)
 
     img1 = cv2.imread(img1_path, cv2.IMREAD_COLOR)[:,:,::-1]
     img2 = cv2.imread(img2_path, cv2.IMREAD_COLOR)[:,:,::-1]
@@ -156,16 +164,18 @@ if __name__=='__main__':
     img1, img2 = resize(img1, img2)
     assert img1.shape == img2.shape, f'shape of image1 {img1.shape} != shape of image2 {img2.shape}'
 
-    _, img1_mag, _, filtered_img1_mag, filtered_img1_channel = filtering(img1, 0.03, False, filter_type)
+    _, img1_mag, _, filtered_img1_mag, filtered_img1_channel = filtering(img1, low_pass_ratio, False, filter_type)
     filtered_img1 = np.stack(filtered_img1_channel, axis=2)
-    _, img2_mag, _, filtered_img2_mag, filtered_img2_channel = filtering(img2, 0.05, True, filter_type)
+    _, img2_mag, _, filtered_img2_mag, filtered_img2_channel = filtering(img2, high_pass_ratio, True, filter_type)
     filtered_img2 = np.stack(filtered_img2_channel, axis=2)
 
     # before/after hybrid
-    plot_hybrid(img1, img2, filtered_img1, filtered_img2, 'hybrid.png')
+    save_path = os.path.join('task1_result', f'{set_idx}_hybrid.png')
+    plot_hybrid(img1, img2, filtered_img1, filtered_img2, save_path)
 
     # before/after filtering
+    save_path = os.path.join('task1_result', f'{set_idx}_filtering.png')
     plot_filtering(
         img1, img2, img1_mag, img2_mag,
         filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag,
-        'filtering.png')
+        save_path)
