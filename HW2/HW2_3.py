@@ -66,13 +66,13 @@ def shift(img, displ):
     return shifted_img
 
 
-def align(img1, img2, displ, window_size, measure):
+def align(img1, img2, displ, search_range, measure):
     min_diff = float('inf')
     img1 = img1 / 255
     img2 = img2 / 255
     best_displ = [0, 0]
-    for i in range(-window_size+displ[0], window_size+displ[0]):
-        for j in range(-window_size+displ[1], window_size+displ[1]):
+    for i in range(-search_range+displ[0], search_range+displ[0]):
+        for j in range(-search_range+displ[1], search_range+displ[1]):
             shifted_img2 = shift(img2, [i, j])
             diff = measure(img1, shifted_img2)
             if diff < min_diff:
