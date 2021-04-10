@@ -36,3 +36,4 @@
     - `img_path`: str
     - `base_channel`: str, (r, g, b)
     - `pyramid_layer`: int (>=5)
+    - `measure`: (ssim, euclidean, manhattan, ncc)
