@@ -82,65 +82,85 @@ def align(img1, img2, displ, window_size, measure):
 
 
 def colorize(save_dir, img_name, r, g, b, base_channel, pyramid_layer, measure):
-    kernel = gaussian_filter(5, 0.7)
-    g_pyramid_r = gaussian_pyramid(r, pyramid_layer, kernel)[::-1]
-    g_pyramid_g = gaussian_pyramid(g, pyramid_layer, kernel)[::-1]
-    g_pyramid_b = gaussian_pyramid(b, pyramid_layer, kernel)[::-1]
-
-    # show gaussian pyramid of each channel
-    text_kwargs = {
-        'size': 18,
-        'ha': 'left',
-        'va': 'center',
-    }
-    for i in range(pyramid_layer):
-        plt.subplot(3, pyramid_layer, i+1)
-        plt.imshow(g_pyramid_r[i], cmap='gray')
-        plt.title(f'Level {pyramid_layer-i}')
-        plt.xticks([]), plt.yticks([])
-        if i == 0:
-            plt.gca().text(-0.4, 0.5, 'R', transform=plt.gca().transAxes, **text_kwargs)
-
-        plt.subplot(3, pyramid_layer, pyramid_layer+i+1)
-        plt.imshow(g_pyramid_g[i], cmap='gray')
-        plt.xticks([]), plt.yticks([])
-        if i == 0:
-            plt.gca().text(-0.4, 0.5, 'G', transform=plt.gca().transAxes, **text_kwargs)
-
-        plt.subplot(3, pyramid_layer, pyramid_layer*2+i+1)
-        plt.imshow(g_pyramid_b[i], cmap='gray')
-        plt.xticks([]), plt.yticks([])
-        if i == 0:
-            plt.gca().text(-0.4, 0.5, 'B', transform=plt.gca().transAxes, **text_kwargs)
-    plt.savefig(os.path.join(save_dir, f'{img_name}_pyramid.png'), dpi=200), plt.clf()
-
-    if base_channel == 'r':
-        channel = [g, b, r]
-        g_pyramid = [g_pyramid_g, g_pyramid_b, g_pyramid_r]
-    elif base_channel == 'g':
-        channel = [r, b, g]
-        g_pyramid = [g_pyramid_r, g_pyramid_b, g_pyramid_g]
-    elif base_channel == 'b':
-        channel = [r, g, b]
-        g_pyramid = [g_pyramid_r, g_pyramid_g, g_pyramid_b]
-    else:
-        print('Unknown channel')
-        raise NotImplementedError
-
     CH1, CH2, BASE = 0, 1, 2
-    displ = [
-        align(g_pyramid[BASE][0], g_pyramid[CH1][0], [0, 0], 15, measure),
-        align(g_pyramid[BASE][0], g_pyramid[CH2][0], [0, 0], 15, measure)
-    ]
-    for i in range(1, len(g_pyramid[BASE])):
-        displ[CH1] = [d*2 for d in displ[CH1]]
-        displ[CH2] = [d*2 for d in displ[CH2]]
-        displ[CH1] = align(g_pyramid[BASE][i], g_pyramid[CH1][i], displ[CH1], 5, measure)
-        displ[CH2] = align(g_pyramid[BASE][i], g_pyramid[CH2][i], displ[CH2], 5, measure)
-    shifted = [
-        shift(channel[CH1], displ[CH1]),
-        shift(channel[CH2], displ[CH2]),
-    ]
+    if pyramid_layer == -1:
+        if base_channel == 'r':
+            channel = [g, b, r]
+        elif base_channel == 'g':
+            channel = [r, b, g]
+        elif base_channel == 'b':
+            channel = [r, g, b]
+        else:
+            print('Unknown channel')
+            raise NotImplementedError
+
+        displ = [
+            align(channel[BASE], channel[CH1], [0, 0], 15, measure),
+            align(channel[BASE], channel[CH2], [0, 0], 15, measure)
+        ]
+        shifted = [
+            shift(channel[CH1], displ[CH1]),
+            shift(channel[CH2], displ[CH2]),
+        ]
+    else:
+        kernel = gaussian_filter(5, 0.7)
+        g_pyramid_r = gaussian_pyramid(r, pyramid_layer, kernel)[::-1]
+        g_pyramid_g = gaussian_pyramid(g, pyramid_layer, kernel)[::-1]
+        g_pyramid_b = gaussian_pyramid(b, pyramid_layer, kernel)[::-1]
+
+        # show gaussian pyramid of each channel
+        text_kwargs = {
+            'size': 18,
+            'ha': 'left',
+            'va': 'center',
+        }
+        for i in range(pyramid_layer):
+            plt.subplot(3, pyramid_layer, i+1)
+            plt.imshow(g_pyramid_r[i], cmap='gray')
+            plt.title(f'Level {pyramid_layer-i}')
+            plt.xticks([]), plt.yticks([])
+            if i == 0:
+                plt.gca().text(-0.4, 0.5, 'R', transform=plt.gca().transAxes, **text_kwargs)
+
+            plt.subplot(3, pyramid_layer, pyramid_layer+i+1)
+            plt.imshow(g_pyramid_g[i], cmap='gray')
+            plt.xticks([]), plt.yticks([])
+            if i == 0:
+                plt.gca().text(-0.4, 0.5, 'G', transform=plt.gca().transAxes, **text_kwargs)
+
+            plt.subplot(3, pyramid_layer, pyramid_layer*2+i+1)
+            plt.imshow(g_pyramid_b[i], cmap='gray')
+            plt.xticks([]), plt.yticks([])
+            if i == 0:
+                plt.gca().text(-0.4, 0.5, 'B', transform=plt.gca().transAxes, **text_kwargs)
+        plt.savefig(os.path.join(save_dir, f'{img_name}_pyramid.png'), dpi=200), plt.clf()
+
+        if base_channel == 'r':
+            channel = [g, b, r]
+            g_pyramid = [g_pyramid_g, g_pyramid_b, g_pyramid_r]
+        elif base_channel == 'g':
+            channel = [r, b, g]
+            g_pyramid = [g_pyramid_r, g_pyramid_b, g_pyramid_g]
+        elif base_channel == 'b':
+            channel = [r, g, b]
+            g_pyramid = [g_pyramid_r, g_pyramid_g, g_pyramid_b]
+        else:
+            print('Unknown channel')
+            raise NotImplementedError
+
+        displ = [
+            align(g_pyramid[BASE][0], g_pyramid[CH1][0], [0, 0], 15, measure),
+            align(g_pyramid[BASE][0], g_pyramid[CH2][0], [0, 0], 15, measure)
+        ]
+        for i in range(1, len(g_pyramid[BASE])):
+            displ[CH1] = [d*2 for d in displ[CH1]]
+            displ[CH2] = [d*2 for d in displ[CH2]]
+            displ[CH1] = align(g_pyramid[BASE][i], g_pyramid[CH1][i], displ[CH1], 5, measure)
+            displ[CH2] = align(g_pyramid[BASE][i], g_pyramid[CH2][i], displ[CH2], 5, measure)
+        shifted = [
+            shift(channel[CH1], displ[CH1]),
+            shift(channel[CH2], displ[CH2]),
+        ]
 
     if base_channel == 'r':
         result = [r, shifted[CH1], shifted[CH2]]
@@ -155,6 +175,7 @@ def colorize(save_dir, img_name, r, g, b, base_channel, pyramid_layer, measure):
         print('Best displacement of R', displ[CH1])
         print('Best displacement of G', displ[CH2])
     cv2.imwrite(os.path.join(save_dir, f'{img_name}_align.png'), np.stack(result[::-1], axis=2))
+
     return np.stack(result, axis=2)
 
 
@@ -173,6 +194,7 @@ if __name__ == '__main__':
     # img_path = './hw2_data/task3_colorizing/village.tif'
     # img_path = './hw2_data/task3_colorizing/workshop.tif'
     base_channel = 'g'
+    # -1 to disable pyramid aligning
     pyramid_layer = 6
 
     img_name = re.sub(r'\..+', '', img_path.split('/')[-1])
