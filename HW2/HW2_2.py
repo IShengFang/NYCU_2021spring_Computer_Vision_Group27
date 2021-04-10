@@ -74,7 +74,20 @@ def laplacian_pyramid(g_pyramid, num_layers, kernel):
 
 
 if __name__ == '__main__':
-    img_path = './hw2_data/task1,2_hybrid_pyramid/4_marilyn.bmp'
+    # img_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_before.jpg'
+    # img_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_after.jpg'
+    # img_path = './hw2_data/task1,2_hybrid_pyramid/1_bicycle.bmp'
+    # img_path = './hw2_data/task1,2_hybrid_pyramid/1_motorcycle.bmp'
+    # img_path = './hw2_data/task1,2_hybrid_pyramid/2_bird.bmp'
+    # img_path = './hw2_data/task1,2_hybrid_pyramid/2_plane.bmp'
+    # img_path = './hw2_data/task1,2_hybrid_pyramid/3_cat.bmp'
+    # img_path = './hw2_data/task1,2_hybrid_pyramid/3_dog.bmp'
+    # img_path = './hw2_data/task1,2_hybrid_pyramid/4_einstein.bmp'
+    # img_path = './hw2_data/task1,2_hybrid_pyramid/4_marilyn.bmp'
+    # img_path = './hw2_data/task1,2_hybrid_pyramid/5_fish.bmp'
+    img_path = './hw2_data/task1,2_hybrid_pyramid/5_submarine.bmp'
+    # img_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_before.jpg'
+    # img_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_after.jpg'
     num_layers = 5
     filter_size = 5
     filter_sigma = 1.0

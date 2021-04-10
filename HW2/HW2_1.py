@@ -81,7 +81,6 @@ def plot_hybrid(img1, img2, filtered_img1, filtered_img2, save_path):
     plt.imshow(hybrid_img)
     plt.title('Hybrid'), plt.xticks([], []), plt.yticks([], [])
 
-    plt.tight_layout()
     plt.savefig(save_path, dpi=300), plt.clf()
 
 
@@ -92,45 +91,34 @@ def plot_filtering(
     color = ['R', 'G', 'B']
     fs = 9
 
-    plt.subplot(4, 4, 1)
-    plt.imshow(img1)
-    plt.title('Origin (low-pass)', fontsize=fs)
-    plt.xticks([], []), plt.yticks([], [])
-    for i in range(3):
-        plt.subplot(4, 4, i+2)
-        plt.imshow(img1_mag[i], cmap='gray')
-        plt.title(color[i], fontsize=fs)
-        plt.xticks([], []), plt.yticks([], [])
+    fig, axs = plt.subplots(4, 4, constrained_layout=True)
+    axs = axs.flat
+    for ax in axs:
+        ax.set_xticks([], []), ax.set_yticks([], [])
 
-    plt.subplot(4, 4, 4+1)
-    plt.imshow(clip_and_cast(filtered_img1))
-    plt.title('Filtered (low-pass)', fontsize=fs)
-    plt.xticks([], []), plt.yticks([], [])
+    axs[0].imshow(img1)
+    axs[0].set_title('Origin (low-pass)', fontsize=fs)
     for i in range(3):
-        plt.subplot(4, 4, 4+i+2)
-        plt.imshow(filtered_img1_mag[i], cmap='gray')
-        plt.title(color[i], fontsize=fs)
-        plt.xticks([], []), plt.yticks([], [])
+        axs[i+1].imshow(img1_mag[i], cmap='gray')
+        axs[i+1].set_title(color[i], fontsize=fs)
 
-    plt.subplot(4, 4, 8+1)
-    plt.imshow(img2)
-    plt.title('Origin (high-pass)', fontsize=fs)
-    plt.xticks([], []), plt.yticks([], [])
+    axs[4].imshow(clip_and_cast(filtered_img1))
+    axs[4].set_title('Filtered (low-pass)', fontsize=fs)
     for i in range(3):
-        plt.subplot(4, 4, 8+i+2)
-        plt.imshow(img2_mag[i], cmap='gray')
-        plt.title(color[i], fontsize=fs)
-        plt.xticks([], []), plt.yticks([], [])
+        axs[4+i+1].imshow(filtered_img1_mag[i], cmap='gray')
+        axs[4+i+1].set_title(color[i], fontsize=fs)
 
-    plt.subplot(4, 4, 12+1)
-    plt.imshow(clip_and_cast(filtered_img2))
-    plt.title('Filtered (high-pass)', fontsize=fs)
-    plt.xticks([], []), plt.yticks([], [])
+    axs[8].imshow(img2)
+    axs[8].set_title('Origin (high-pass)', fontsize=fs)
     for i in range(3):
-        plt.subplot(4, 4, 12+i+2)
-        plt.imshow(filtered_img2_mag[i], cmap='gray')
-        plt.title(color[i], fontsize=fs)
-        plt.xticks([], []), plt.yticks([], [])
+        axs[8+i+1].imshow(img2_mag[i], cmap='gray')
+        axs[8+i+1].set_title(color[i], fontsize=fs)
+
+    axs[12].imshow(clip_and_cast(filtered_img2))
+    axs[12].set_title('Filtered (high-pass)', fontsize=fs)
+    for i in range(3):
+        axs[12+i+1].imshow(filtered_img2_mag[i], cmap='gray')
+        axs[12+i+1].set_title(color[i], fontsize=fs)
 
     plt.savefig(save_path, dpi=300), plt.clf()
 
@@ -138,22 +126,22 @@ def plot_filtering(
 if __name__=='__main__':
     # img1_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_before.jpg'
     # img2_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_after.jpg'
-    img1_path = './hw2_data/task1,2_hybrid_pyramid/1_bicycle.bmp'
-    img2_path = './hw2_data/task1,2_hybrid_pyramid/1_motorcycle.bmp'
+    # img1_path = './hw2_data/task1,2_hybrid_pyramid/1_bicycle.bmp'
+    # img2_path = './hw2_data/task1,2_hybrid_pyramid/1_motorcycle.bmp'
     # img1_path = './hw2_data/task1,2_hybrid_pyramid/2_bird.bmp'
     # img2_path = './hw2_data/task1,2_hybrid_pyramid/2_plane.bmp'
     # img1_path = './hw2_data/task1,2_hybrid_pyramid/3_cat.bmp'
     # img2_path = './hw2_data/task1,2_hybrid_pyramid/3_dog.bmp'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/4_einstein.bmp'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/4_marilyn.bmp'
+    img1_path = './hw2_data/task1,2_hybrid_pyramid/4_einstein.bmp'
+    img2_path = './hw2_data/task1,2_hybrid_pyramid/4_marilyn.bmp'
     # img1_path = './hw2_data/task1,2_hybrid_pyramid/5_fish.bmp'
     # img2_path = './hw2_data/task1,2_hybrid_pyramid/5_submarine.bmp'
     # img1_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_before.jpg'
     # img2_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_after.jpg'
     # ideal, gaussian
     filter_type = 'ideal'
-    low_pass_ratio = 0.04
-    high_pass_ratio = 0.05
+    low_pass_ratio = 0.07
+    high_pass_ratio = 0.08
 
     set_idx = re.sub(r'\..+', '', img1_path.split('/')[-1]).split('_')[0]
     os.makedirs('task1_result', exist_ok=True)
