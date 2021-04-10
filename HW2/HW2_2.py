@@ -7,11 +7,11 @@ from matplotlib import pyplot as plt
 from numpy.fft import fft2, ifft2, fftshift
 
 
-def gaussian_filter(x, sigma):
-    kernel = np.zeros((x, x))
-    center = x // 2
-    for i in range(x):
-        for j in range(x):
+def gaussian_filter(filter_size, sigma):
+    kernel = np.zeros((filter_size, filter_size))
+    center = filter_size // 2
+    for i in range(filter_size):
+        for j in range(filter_size):
             g = np.exp(-1*((center-i)**2+(center-j)**2)/(2*(sigma**2)))
             g /= 2 * np.pi * (sigma**2)
             kernel[i,j] = g
