@@ -7,17 +7,6 @@ from matplotlib import pyplot as plt
 from numpy.fft import fft2, ifft2, fftshift
 
 
-# def gaussian_filter(x, sigma):
-#     i = np.arange(x)
-#     c = np.ones(x) * (x//2)
-#     c_i_2 = ((c-i)**2).reshape(-1, 1).repeat(x, axis=1)
-#     c_j_2 = ((c-i)**2).reshape(1, -1).repeat(x, axis=0)
-#     g1 = np.exp(-1*c_i_2/(2*(sigma**2)))
-#     g2 = np.exp(-1*c_j_2/(2*(sigma**2)))
-#     kernel = g1 * g2 / (2*np.pi*(sigma**2))
-#     return kernel
-
-
 def gaussian_filter(x, sigma):
     kernel = np.zeros((x, x))
     center = x // 2
@@ -28,17 +17,6 @@ def gaussian_filter(x, sigma):
             kernel[i,j] = g
     kernel /= kernel.sum()
     return kernel
-
-
-# def smooth(img, kernel):
-#     h, w = img.shape
-#     num = kernel.shape[0] // 2
-#     img = np.pad(img, ((num, num), (num, num)), 'edge')
-#     result = np.zeros((h, w))
-#     for i in range(h):
-#         for j in range(w):
-#             result[i,j] = np.sum(img[i:i+(2*num)+1,j:j+(2*num)+1]*kernel)
-#     return result
 
 
 def smooth(img, kernel):
