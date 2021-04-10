@@ -24,7 +24,7 @@ def remove_white_border(img):
 
 def remove_black_border(img):
     h, w = img.shape
-    new_h, new_w = int(h/1.07), int(w/1.07)
+    new_h, new_w = int(0.93*h), int(0.93*w)
     return img[h-new_h:new_h,w-new_w:new_w]
 
 
@@ -36,8 +36,16 @@ def manhattan(img1, img2):
     return np.sum(np.abs(img1-img2))
 
 
+def zncc(img1, img2):
+    mu_img1 = np.meam(img1)
+    mu_img2 = np.meam(img2)
+    std_img1 = np.std(img1)
+    std_img2 = np.std(img2)
+    return -1 * ((img1-mu_img1)*(img2-mu_img2)/(std_img1*std_img2)).mean()
+
+
 def ncc(img1, img2):
-    return -1 * ((img1/norm(img1))*(img2/norm(img2))).sum()
+    return -1 * ((img1/np.std(img1))*(img2/np.std(img2))).mean()
 
 
 def ssim(img1, img2):
@@ -71,8 +79,8 @@ def align(img1, img2, displ, search_range, measure):
     img1 = img1 / 255
     img2 = img2 / 255
     best_displ = [0, 0]
-    for i in range(-search_range+displ[0], search_range+displ[0]):
-        for j in range(-search_range+displ[1], search_range+displ[1]):
+    for i in range(displ[0]-search_range, displ[0]+search_range):
+        for j in range(displ[1]-search_range, displ[1]+search_range):
             shifted_img2 = shift(img2, [i, j])
             diff = measure(img1, shifted_img2)
             if diff < min_diff:
@@ -152,11 +160,13 @@ def colorize(save_dir, img_name, r, g, b, base_channel, pyramid_layer, measure):
             align(g_pyramid[BASE][0], g_pyramid[CH1][0], [0, 0], 15, measure),
             align(g_pyramid[BASE][0], g_pyramid[CH2][0], [0, 0], 15, measure)
         ]
+        print(f'Aligning level {pyramid_layer}')
         for i in range(1, len(g_pyramid[BASE])):
             displ[CH1] = [d*2 for d in displ[CH1]]
             displ[CH2] = [d*2 for d in displ[CH2]]
             displ[CH1] = align(g_pyramid[BASE][i], g_pyramid[CH1][i], displ[CH1], 5, measure)
             displ[CH2] = align(g_pyramid[BASE][i], g_pyramid[CH2][i], displ[CH2], 5, measure)
+            print(f'Aligning level {pyramid_layer-i}')
         shifted = [
             shift(channel[CH1], displ[CH1]),
             shift(channel[CH2], displ[CH2]),
@@ -189,13 +199,15 @@ if __name__ == '__main__':
     # img_path = './hw2_data/task3_colorizing/nativity.jpg'
     # img_path = './hw2_data/task3_colorizing/onion_church.tif'
     # img_path = './hw2_data/task3_colorizing/three_generations.tif'
-    img_path = './hw2_data/task3_colorizing/tobolsk.jpg'
-    # img_path = './hw2_data/task3_colorizing/train.tif'
+    # img_path = './hw2_data/task3_colorizing/tobolsk.jpg'
+    img_path = './hw2_data/task3_colorizing/train.tif'
     # img_path = './hw2_data/task3_colorizing/village.tif'
     # img_path = './hw2_data/task3_colorizing/workshop.tif'
     base_channel = 'g'
     # -1 to disable pyramid aligning
     pyramid_layer = 6
+    # ssim, euclidean, manhattan, ncc
+    measure = ncc
 
     img_name = re.sub(r'\..+', '', img_path.split('/')[-1])
     save_dir = os.path.join('task3_result', img_name)
@@ -204,14 +216,14 @@ if __name__ == '__main__':
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     print('Image shape (h, w):', img.shape)
 
-    plt.subplot(1, 2, 1)
+    plt.subplot(1, 3, 1)
     plt.imshow(img, cmap='gray'), plt.xticks([]), plt.yticks([])
-    plt.title('Before')
+    plt.title('Origin')
+
     img = remove_white_border(img)
-    plt.subplot(1, 2, 2)
+    plt.subplot(1, 3, 2)
     plt.imshow(img, cmap='gray'), plt.xticks([]), plt.yticks([])
-    plt.title('After')
-    plt.savefig(os.path.join(save_dir, f'{img_name}_remove-border.png'), dpi=200), plt.clf()
+    plt.title('Remove\nwhite border')
 
     h, w = img.shape
     h = h // 3
@@ -219,9 +231,18 @@ if __name__ == '__main__':
     g = remove_black_border(img[h:h*2,:])
     r = remove_black_border(img[h*2:h*3,:])
 
+    plt.subplot(3, 3, 3)
+    plt.imshow(b, cmap='gray'), plt.xticks([]), plt.yticks([])
+    plt.title('Remove\ndark border')
+    plt.subplot(3, 3, 6)
+    plt.imshow(g, cmap='gray'), plt.xticks([]), plt.yticks([])
+    plt.subplot(3, 3, 9)
+    plt.imshow(r, cmap='gray'), plt.xticks([]), plt.yticks([])
+
+    plt.savefig(os.path.join(save_dir, f'{img_name}_remove-border.png'), dpi=200), plt.clf()
+
     # without alignment
     cv2.imwrite(os.path.join(save_dir, f'{img_name}_no-align.png'), np.stack((b, g, r), axis=2))
 
     # with alignment
-    # ssim, euclidean, manhattan, ncc
-    result = colorize(save_dir, img_name, r, g, b, base_channel, pyramid_layer, euclidean)
+    result = colorize(save_dir, img_name, r, g, b, base_channel, pyramid_layer, measure)
