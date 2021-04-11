@@ -132,15 +132,17 @@ if __name__=='__main__':
     # img2_path = './hw2_data/task1,2_hybrid_pyramid/2_plane.bmp'
     # img1_path = './hw2_data/task1,2_hybrid_pyramid/3_cat.bmp'
     # img2_path = './hw2_data/task1,2_hybrid_pyramid/3_dog.bmp'
-    img1_path = './hw2_data/task1,2_hybrid_pyramid/4_einstein.bmp'
-    img2_path = './hw2_data/task1,2_hybrid_pyramid/4_marilyn.bmp'
+    # img1_path = './hw2_data/task1,2_hybrid_pyramid/4_einstein.bmp'
+    # img2_path = './hw2_data/task1,2_hybrid_pyramid/4_marilyn.bmp'
     # img1_path = './hw2_data/task1,2_hybrid_pyramid/5_fish.bmp'
     # img2_path = './hw2_data/task1,2_hybrid_pyramid/5_submarine.bmp'
     # img1_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_before.jpg'
     # img2_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_after.jpg'
+    img1_path = './hw2_data/self/0_hello.jpg'
+    img2_path = './hw2_data/self/0_world.jpg'
     # ideal, gaussian
     filter_type = 'ideal'
-    low_pass_ratio = 0.07
+    low_pass_ratio = 0.08
     high_pass_ratio = 0.08
 
     set_idx = re.sub(r'\..+', '', img1_path.split('/')[-1]).split('_')[0]
