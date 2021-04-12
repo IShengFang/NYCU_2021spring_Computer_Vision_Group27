@@ -135,9 +135,13 @@ if __name__=='__main__':
     parser.add_argument('--high_pass_ratio', type=float, default=0.08)
 
     parser.add_argument('--filter_type', type=str, default='both', help='ideal, gaussian, both')
-    args = parser.parse_args()
 
-    set_idx = re.sub(r'\..+', '', args.img1_path.split('/')[-1]).split('_')[1]
+    parser.add_argument('--result_name', type=str, default=None)
+    args = parser.parse_args()
+    
+    if args.result_name is None:
+        args.result_name  = re.sub(r'\..+', '', args.img1_path.split('/')[-1]).split('.')[1]
+
     os.makedirs('task1_result', exist_ok=True)
 
     img1 = cv2.imread(args.img1_path, cv2.IMREAD_COLOR)[:,:,::-1]
@@ -153,11 +157,11 @@ if __name__=='__main__':
         filtered_img2 = np.stack(filtered_img2_channel, axis=2)
 
         # before/after hybrid
-        save_path = os.path.join('task1_result', f'{set_idx}_hybrid_ideal.png')
+        save_path = os.path.join('task1_result', f'{args.result_name }_hybrid_ideal.png')
         plot_hybrid(img1, img2, filtered_img1, filtered_img2, save_path)
 
         # before/after filtering
-        save_path = os.path.join('task1_result', f'{set_idx}_filtering_ideal.png')
+        save_path = os.path.join('task1_result', f'{args.result_name }_filtering_ideal.png')
         plot_filtering(
             img1, img2, img1_mag, img2_mag,
             filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag,
@@ -170,11 +174,11 @@ if __name__=='__main__':
         filtered_img2 = np.stack(filtered_img2_channel, axis=2)
 
         # before/after hybrid
-        save_path = os.path.join('task1_result', f'{set_idx}_hybrid_gaussian.png')
+        save_path = os.path.join('task1_result', f'{args.result_name}_hybrid_gaussian.png')
         plot_hybrid(img1, img2, filtered_img1, filtered_img2, save_path)
 
         # before/after filtering
-        save_path = os.path.join('task1_result', f'{set_idx}_filtering_gaussian.png')
+        save_path = os.path.join('task1_result', f'{args.result_name}_filtering_gaussian.png')
         plot_filtering(
             img1, img2, img1_mag, img2_mag,
             filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag,
