@@ -4,8 +4,8 @@ import re
 import cv2
 import numpy as np
 from numpy.linalg import norm
+import matplotlib.pyplot as plt
 from argparse import ArgumentParser
-from matplotlib import pyplot as plt
 
 from HW2_2 import gaussian_filter, gaussian_pyramid
 

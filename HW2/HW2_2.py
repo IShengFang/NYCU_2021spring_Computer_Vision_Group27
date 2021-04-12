@@ -3,9 +3,9 @@ import os
 import re
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
-from numpy.fft import fft2, ifft2, fftshift
+import matplotlib.pyplot as plt
 from argparse import ArgumentParser
+from numpy.fft import fft2, ifft2, fftshift
 
 
 def gaussian_filter(filter_size, sigma):
@@ -53,18 +53,13 @@ def laplacian_pyramid(g_pyramid, num_layers, kernel):
 
 
 if __name__ == '__main__':
-
-
     parser = ArgumentParser()
     parser.add_argument('--img_path', type=str, 
                         default='./hw2_data/task1,2_hybrid_pyramid/5_submarine.bmp')
     parser.add_argument('--num_layers', type=int, default=5)
     parser.add_argument('--filter_size', type=int, default=5)
     parser.add_argument('--filter_sigma', type=float, default=1.)
-
-    
     args = parser.parse_args()
-
 
     img_name = re.sub(r'\..+', '', args.img_path.split('/')[-1])
     os.makedirs('task2_result', exist_ok=True)

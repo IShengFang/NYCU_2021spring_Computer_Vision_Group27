@@ -4,8 +4,8 @@ import re
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from numpy.fft import fft2, ifft2, fftshift, ifftshift
 from argparse import ArgumentParser
+from numpy.fft import fft2, ifft2, fftshift, ifftshift
 
 
 def filtering(img, ratio, high_pass, filter_type):
@@ -125,7 +125,6 @@ def plot_filtering(
 
 
 if __name__=='__main__':
-
     parser = ArgumentParser()
     parser.add_argument('--img1_path', type=str, 
                         default='./hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_before.jpg')
@@ -133,14 +132,12 @@ if __name__=='__main__':
                         default='./hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_after.jpg')
     parser.add_argument('--low_pass_ratio', type=float, default=0.08)
     parser.add_argument('--high_pass_ratio', type=float, default=0.08)
-
     parser.add_argument('--filter_type', type=str, default='both', help='ideal, gaussian, both')
-
     parser.add_argument('--result_name', type=str, default=None)
     args = parser.parse_args()
     
     if args.result_name is None:
-        args.result_name  = re.sub(r'\..+', '', args.img1_path.split('/')[-1]).split('.')[1]
+        args.result_name = re.sub(r'\..+', '', args.img1_path.split('/')[-1]).split('.')[1]
 
     os.makedirs('task1_result', exist_ok=True)
 
@@ -149,7 +146,7 @@ if __name__=='__main__':
 
     img1, img2 = resize(img1, img2)
     assert img1.shape == img2.shape, f'shape of image1 {img1.shape} != shape of image2 {img2.shape}'
-    if args.filter_type == 'ideal' or args.filter_type == 'both':
+    if args.filter_type=='ideal' or args.filter_type=='both':
         filter_type = 'ideal'
         _, img1_mag, _, filtered_img1_mag, filtered_img1_channel = filtering(img1, args.low_pass_ratio, False, filter_type)
         filtered_img1 = np.stack(filtered_img1_channel, axis=2)
@@ -166,7 +163,7 @@ if __name__=='__main__':
             img1, img2, img1_mag, img2_mag,
             filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag,
             save_path)
-    if args.filter_type == 'gaussian' or args.filter_type == 'both':
+    if args.filter_type=='gaussian' or args.filter_type=='both':
         filter_type = 'gaussian'
         _, img1_mag, _, filtered_img1_mag, filtered_img1_channel = filtering(img1, args.low_pass_ratio, False, filter_type)
         filtered_img1 = np.stack(filtered_img1_channel, axis=2)
