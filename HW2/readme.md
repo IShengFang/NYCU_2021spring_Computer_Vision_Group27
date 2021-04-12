@@ -35,6 +35,12 @@ A hybrid image is the sum of a low-pass filtered version of the one image and a 
     - `low_pass_ratio`: float (0~1)
     - `high_pass_ratio`: float (0~1)
 
+### exprimeent
+- NYMU, NCTU
+    - 校徽跟文字 
+- 人物的照片？
+    -  彩色人像
+
 ## Task 2: Image pyramid
 
 ### Overview
@@ -46,6 +52,10 @@ An image pyramid is a collection of representations of an image.
 - Change the following variables for different experiments
     - `img_path`: str
     - `num_layers`: int
+    - `filter_size`: int (odd number)
+    - `filter_sigma`: float (0~1)
+
+#### experiment 
     - `filter_size`: int (odd number)
     - `filter_sigma`: float (0~1)
 
@@ -62,3 +72,9 @@ Goal: automatically produce a color image from the digitized Prokudin-Gorskii gl
     - `base_channel`: str, (r, g, b)
     - `pyramid_layer`: int (>=5)
     - `measure`: (ssim, euclidean, manhattan, ncc)
+
+### Experiment 
+- speed
+    - pyramind or not
+- pyaamind layer num 4~6
+- measure 4
