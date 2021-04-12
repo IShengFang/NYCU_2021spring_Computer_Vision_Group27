@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 from numpy.linalg import norm
 from matplotlib import pyplot as plt
+from argparse import ArgumentParser
 
 from HW2_2 import gaussian_filter, gaussian_pyramid
 
@@ -184,36 +185,41 @@ def colorize(save_dir, img_name, r, g, b, base_channel, pyramid_layer, measure):
         result = [shifted[CH1], shifted[CH2], b]
         print('Best displacement of R', displ[CH1])
         print('Best displacement of G', displ[CH2])
-    cv2.imwrite(os.path.join(save_dir, f'{img_name}_align.png'), np.stack(result[::-1], axis=2))
 
-    return np.stack(result, axis=2)
+    return np.stack(result[::-1], axis=2)
 
 
 if __name__ == '__main__':
-    # img_path = './hw2_data/task3_colorizing/cathedral.jpg'
-    # img_path = './hw2_data/task3_colorizing/emir.tif'
-    # img_path = './hw2_data/task3_colorizing/icon.tif'
-    # img_path = './hw2_data/task3_colorizing/lady.tif'
-    # img_path = './hw2_data/task3_colorizing/melons.tif'
-    # img_path = './hw2_data/task3_colorizing/monastery.jpg'
-    # img_path = './hw2_data/task3_colorizing/nativity.jpg'
-    # img_path = './hw2_data/task3_colorizing/onion_church.tif'
-    # img_path = './hw2_data/task3_colorizing/three_generations.tif'
-    # img_path = './hw2_data/task3_colorizing/tobolsk.jpg'
-    img_path = './hw2_data/task3_colorizing/train.tif'
-    # img_path = './hw2_data/task3_colorizing/village.tif'
-    # img_path = './hw2_data/task3_colorizing/workshop.tif'
+    parser = ArgumentParser()
+    parser.add_argument('--img_path', type=str, 
+                        default='./hw2_data/task3_colorizing/cathedral.jpg')
+    parser.add_argument('--base_channel', type=str, default='g', help='r, g, b')
+    parser.add_argument('--measure', type=str, default='euclidean', help='ssim, euclidean, manhattan, ncc, zncc')
+    parser.add_argument('--pyramid_layer', type=int, default=5)
+    parser.add_argument('--filter_size', type=int, default=5)
+    parser.add_argument('--filter_sigma', type=float, default=1.)    
+    args = parser.parse_args()
+
     base_channel = 'g'
     # -1 to disable pyramid aligning
     pyramid_layer = 6
-    # ssim, euclidean, manhattan, ncc
-    measure = ncc
+    if args.measure == 'ssim':
+        measure = ssim
+    if args.measure == 'euclidean':
+        measure = euclidean
+    if args.measure == 'manhattan':
+        measure = manhattan
+    if args.measure == 'ncc':
+        measure = ncc
+    if args.measure == 'zncc':
+        measure = zncc
 
-    img_name = re.sub(r'\..+', '', img_path.split('/')[-1])
+
+    img_name = re.sub(r'\..+', '', args.img_path.split('/')[-1])
     save_dir = os.path.join('task3_result', img_name)
     os.makedirs(save_dir, exist_ok=True)
 
-    img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+    img = cv2.imread(args.img_path, cv2.IMREAD_GRAYSCALE)
     print('Image shape (h, w):', img.shape)
 
     plt.subplot(1, 3, 1)
@@ -246,3 +252,4 @@ if __name__ == '__main__':
 
     # with alignment
     result = colorize(save_dir, img_name, r, g, b, base_channel, pyramid_layer, measure)
+    cv2.imwrite(os.path.join(save_dir, f'{img_name}_align_pyd_{args.pyramid_layer}_size_{args.filter_size}_sigma_{args.filter_sigma}.png'), result)
