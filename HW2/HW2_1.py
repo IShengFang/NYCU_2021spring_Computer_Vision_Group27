@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy.fft import fft2, ifft2, fftshift, ifftshift
+from argparse import ArgumentParser
 
 
 def filtering(img, ratio, high_pass, filter_type):
@@ -124,48 +125,57 @@ def plot_filtering(
 
 
 if __name__=='__main__':
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_before.jpg'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_after.jpg'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/1_bicycle.bmp'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/1_motorcycle.bmp'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/2_bird.bmp'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/2_plane.bmp'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/3_cat.bmp'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/3_dog.bmp'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/4_einstein.bmp'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/4_marilyn.bmp'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/5_fish.bmp'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/5_submarine.bmp'
-    # img1_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_before.jpg'
-    # img2_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_after.jpg'
-    img1_path = './hw2_data/self/0_hello.jpg'
-    img2_path = './hw2_data/self/0_world.jpg'
-    # ideal, gaussian
-    filter_type = 'ideal'
-    low_pass_ratio = 0.08
-    high_pass_ratio = 0.08
 
-    set_idx = re.sub(r'\..+', '', img1_path.split('/')[-1]).split('_')[0]
+    parser = ArgumentParser()
+    parser.add_argument('--img1_path', type=str, 
+                        default='./hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_before.jpg')
+    parser.add_argument('--img2_path', type=str, 
+                        default='./hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_after.jpg')
+    parser.add_argument('--low_pass_ratio', type=float, default=0.08)
+    parser.add_argument('--high_pass_ratio', type=float, default=0.08)
+
+    parser.add_argument('--filter_type', type=str, default='both', help='ideal, gaussian, both')
+    args = parser.parse_args()
+
+    set_idx = re.sub(r'\..+', '', args.img1_path.split('/')[-1]).split('_')[1]
     os.makedirs('task1_result', exist_ok=True)
 
-    img1 = cv2.imread(img1_path, cv2.IMREAD_COLOR)[:,:,::-1]
-    img2 = cv2.imread(img2_path, cv2.IMREAD_COLOR)[:,:,::-1]
+    img1 = cv2.imread(args.img1_path, cv2.IMREAD_COLOR)[:,:,::-1]
+    img2 = cv2.imread(args.img2_path, cv2.IMREAD_COLOR)[:,:,::-1]
 
     img1, img2 = resize(img1, img2)
     assert img1.shape == img2.shape, f'shape of image1 {img1.shape} != shape of image2 {img2.shape}'
+    if args.filter_type == 'ideal' or args.filter_type == 'both':
+        filter_type = 'ideal'
+        _, img1_mag, _, filtered_img1_mag, filtered_img1_channel = filtering(img1, args.low_pass_ratio, False, filter_type)
+        filtered_img1 = np.stack(filtered_img1_channel, axis=2)
+        _, img2_mag, _, filtered_img2_mag, filtered_img2_channel = filtering(img2, args.high_pass_ratio, True, filter_type)
+        filtered_img2 = np.stack(filtered_img2_channel, axis=2)
 
-    _, img1_mag, _, filtered_img1_mag, filtered_img1_channel = filtering(img1, low_pass_ratio, False, filter_type)
-    filtered_img1 = np.stack(filtered_img1_channel, axis=2)
-    _, img2_mag, _, filtered_img2_mag, filtered_img2_channel = filtering(img2, high_pass_ratio, True, filter_type)
-    filtered_img2 = np.stack(filtered_img2_channel, axis=2)
+        # before/after hybrid
+        save_path = os.path.join('task1_result', f'{set_idx}_hybrid_ideal.png')
+        plot_hybrid(img1, img2, filtered_img1, filtered_img2, save_path)
 
-    # before/after hybrid
-    save_path = os.path.join('task1_result', f'{set_idx}_hybrid.png')
-    plot_hybrid(img1, img2, filtered_img1, filtered_img2, save_path)
+        # before/after filtering
+        save_path = os.path.join('task1_result', f'{set_idx}_filtering_ideal.png')
+        plot_filtering(
+            img1, img2, img1_mag, img2_mag,
+            filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag,
+            save_path)
+    if args.filter_type == 'gaussian' or args.filter_type == 'both':
+        filter_type = 'gaussian'
+        _, img1_mag, _, filtered_img1_mag, filtered_img1_channel = filtering(img1, args.low_pass_ratio, False, filter_type)
+        filtered_img1 = np.stack(filtered_img1_channel, axis=2)
+        _, img2_mag, _, filtered_img2_mag, filtered_img2_channel = filtering(img2, args.high_pass_ratio, True, filter_type)
+        filtered_img2 = np.stack(filtered_img2_channel, axis=2)
 
-    # before/after filtering
-    save_path = os.path.join('task1_result', f'{set_idx}_filtering.png')
-    plot_filtering(
-        img1, img2, img1_mag, img2_mag,
-        filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag,
-        save_path)
+        # before/after hybrid
+        save_path = os.path.join('task1_result', f'{set_idx}_hybrid_gaussian.png')
+        plot_hybrid(img1, img2, filtered_img1, filtered_img2, save_path)
+
+        # before/after filtering
+        save_path = os.path.join('task1_result', f'{set_idx}_filtering_gaussian.png')
+        plot_filtering(
+            img1, img2, img1_mag, img2_mag,
+            filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag,
+            save_path)
