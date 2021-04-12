@@ -4,8 +4,8 @@ import re
 import cv2
 import numpy as np
 from numpy.linalg import norm
-from matplotlib import pyplot as plt
 from argparse import ArgumentParser
+from matplotlib import pyplot as plt
 
 from HW2_2 import gaussian_filter, gaussian_pyramid
 
@@ -90,7 +90,11 @@ def align(img1, img2, displ, search_range, measure):
     return best_displ
 
 
-def colorize(save_dir, img_name, r, g, b, base_channel, pyramid_layer, measure):
+def colorize(
+        save_dir, img_name,
+        r, g, b, base_channel,
+        pyramid_layer, filter_size, filter_sigma,
+        measure):
     CH1, CH2, BASE = 0, 1, 2
     if pyramid_layer == -1:
         if base_channel == 'r':
@@ -112,7 +116,7 @@ def colorize(save_dir, img_name, r, g, b, base_channel, pyramid_layer, measure):
             shift(channel[CH2], displ[CH2]),
         ]
     else:
-        kernel = gaussian_filter(5, 0.7)
+        kernel = gaussian_filter(filter_size, filter_sigma)
         g_pyramid_r = gaussian_pyramid(r, pyramid_layer, kernel)[::-1]
         g_pyramid_g = gaussian_pyramid(g, pyramid_layer, kernel)[::-1]
         g_pyramid_b = gaussian_pyramid(b, pyramid_layer, kernel)[::-1]
@@ -200,20 +204,16 @@ if __name__ == '__main__':
     parser.add_argument('--filter_sigma', type=float, default=1.)    
     args = parser.parse_args()
 
-    base_channel = 'g'
+    base_channel = args.base_channel
     # -1 to disable pyramid aligning
-    pyramid_layer = 6
-    if args.measure == 'ssim':
-        measure = ssim
-    if args.measure == 'euclidean':
-        measure = euclidean
-    if args.measure == 'manhattan':
-        measure = manhattan
-    if args.measure == 'ncc':
-        measure = ncc
-    if args.measure == 'zncc':
-        measure = zncc
-
+    pyramid_layer = args.pyramid_layer
+    filter_size = args.filter_size
+    filter_sigma = args.filter_sigma
+    if args.measure not in ['ssim', 'euclidean', 'manhattan', 'ncc', 'zncc']:
+        print('Unknown measurement')
+        raise NotImplementedError
+    else:
+        measure = vars()[args.measure]
 
     img_name = re.sub(r'\..+', '', args.img_path.split('/')[-1])
     save_dir = os.path.join('task3_result', img_name)
@@ -251,5 +251,9 @@ if __name__ == '__main__':
     cv2.imwrite(os.path.join(save_dir, f'{img_name}_no-align.png'), np.stack((b, g, r), axis=2))
 
     # with alignment
-    result = colorize(save_dir, img_name, r, g, b, base_channel, pyramid_layer, measure)
-    cv2.imwrite(os.path.join(save_dir, f'{img_name}_align_pyd_{args.pyramid_layer}_size_{args.filter_size}_sigma_{args.filter_sigma}.png'), result)
+    result = colorize(
+        save_dir, img_name,
+        r, g, b, base_channel,
+        pyramid_layer, filter_size, filter_sigma,
+        measure)
+    cv2.imwrite(os.path.join(save_dir, f'{img_name}_align_pyd_{args.pyramid_layer}_size_{args.filter_size}_sigma_{args.filter_sigma}_{args.measure}.png'), result)
