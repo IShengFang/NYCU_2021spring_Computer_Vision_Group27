@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 from numpy.fft import fft2, ifft2, fftshift
+from argparse import ArgumentParser
 
 
 def gaussian_filter(filter_size, sigma):
@@ -52,35 +53,30 @@ def laplacian_pyramid(g_pyramid, num_layers, kernel):
 
 
 if __name__ == '__main__':
-    # img_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_before.jpg'
-    # img_path = './hw2_data/task1,2_hybrid_pyramid/0_Afghan_girl_after.jpg'
-    # img_path = './hw2_data/task1,2_hybrid_pyramid/1_bicycle.bmp'
-    # img_path = './hw2_data/task1,2_hybrid_pyramid/1_motorcycle.bmp'
-    # img_path = './hw2_data/task1,2_hybrid_pyramid/2_bird.bmp'
-    # img_path = './hw2_data/task1,2_hybrid_pyramid/2_plane.bmp'
-    # img_path = './hw2_data/task1,2_hybrid_pyramid/3_cat.bmp'
-    # img_path = './hw2_data/task1,2_hybrid_pyramid/3_dog.bmp'
-    # img_path = './hw2_data/task1,2_hybrid_pyramid/4_einstein.bmp'
-    # img_path = './hw2_data/task1,2_hybrid_pyramid/4_marilyn.bmp'
-    # img_path = './hw2_data/task1,2_hybrid_pyramid/5_fish.bmp'
-    img_path = './hw2_data/task1,2_hybrid_pyramid/5_submarine.bmp'
-    # img_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_before.jpg'
-    # img_path = './hw2_data/task1,2_hybrid_pyramid/6_makeup_after.jpg'
-    num_layers = 5
-    filter_size = 5
-    filter_sigma = 1.0
 
-    img_name = re.sub(r'\..+', '', img_path.split('/')[-1])
+
+    parser = ArgumentParser()
+    parser.add_argument('--img_path', type=str, 
+                        default='./hw2_data/task1,2_hybrid_pyramid/5_submarine.bmp')
+    parser.add_argument('--num_layers', type=int, default=5)
+    parser.add_argument('--filter_size', type=int, default=5)
+    parser.add_argument('--filter_sigma', type=float, default=1.)
+
+    
+    args = parser.parse_args()
+
+
+    img_name = re.sub(r'\..+', '', args.img_path.split('/')[-1])
     os.makedirs('task2_result', exist_ok=True)
 
-    img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+    img = cv2.imread(args.img_path, cv2.IMREAD_GRAYSCALE)
 
-    kernel = gaussian_filter(filter_size, filter_sigma)
-    g_pyramid = gaussian_pyramid(img, num_layers, kernel)
-    l_pyramid = laplacian_pyramid(g_pyramid, num_layers, kernel)
+    kernel = gaussian_filter(args.filter_size, args.filter_sigma)
+    g_pyramid = gaussian_pyramid(img, args.num_layers, kernel)
+    l_pyramid = laplacian_pyramid(g_pyramid, args.num_layers, kernel)
 
-    plt.suptitle(f'filter size={filter_size}x{filter_size}, sigma={filter_sigma}')
-    plt.subplot(4, num_layers+1, 1)
+    plt.suptitle(f'filter size={args.filter_size}x{args.filter_size}, sigma={args.filter_sigma}')
+    plt.subplot(4, args.num_layers+1, 1)
     plt.imshow(g_pyramid[0], cmap='gray'), plt.xticks([], []), plt.yticks([], [])
     plt.title('Level 0', fontsize=12)
 
@@ -90,26 +86,26 @@ if __name__ == '__main__':
         'va': 'center',
         'rotation': 'vertical'
     }
-    for i in range(num_layers):
-        plt.subplot(4, num_layers+1, i+2)
+    for i in range(args.num_layers):
+        plt.subplot(4, args.num_layers+1, i+2)
         plt.imshow(g_pyramid[i+1], cmap='gray'), plt.xticks([], []), plt.yticks([], [])
         plt.title(f'Level {i+1}', fontsize=12)
-        if i == num_layers-1:
+        if i == args.num_layers-1:
             plt.gca().text(1.3, 0.5, 'Gaussian', transform=plt.gca().transAxes, **text_kwargs)
 
-        plt.subplot(4, num_layers+1, (num_layers+1)+2+i)
+        plt.subplot(4, args.num_layers+1, (args.num_layers+1)+2+i)
         plt.imshow(l_pyramid[i], cmap='gray'), plt.xticks([], []), plt.yticks([], [])
-        if i == num_layers-1:
+        if i == args.num_layers-1:
             plt.gca().text(1.3, 0.5, 'Laplacian', transform=plt.gca().transAxes, **text_kwargs)
 
-        plt.subplot(4, num_layers+1, (num_layers+1)*2+2+i)
+        plt.subplot(4, args.num_layers+1, (args.num_layers+1)*2+2+i)
         plt.imshow(magnitude_spectrum(g_pyramid[i+1])), plt.xticks([], []), plt.yticks([], [])
-        if i == num_layers-1:
+        if i == args.num_layers-1:
             plt.gca().text(1.3, 0.5, 'Gaussian', transform=plt.gca().transAxes, **text_kwargs)
 
-        plt.subplot(4, num_layers+1, (num_layers+1)*3+2+i)
+        plt.subplot(4, args.num_layers+1, (args.num_layers+1)*3+2+i)
         plt.imshow(magnitude_spectrum(l_pyramid[i])), plt.xticks([], []), plt.yticks([], [])
-        if i == num_layers-1:
+        if i == args.num_layers-1:
             plt.gca().text(1.3, 0.5, 'Laplacian', transform=plt.gca().transAxes, **text_kwargs)
 
     plt.savefig(os.path.join('task2_result', f'{img_name}_pyramid.png'), dpi=300)
