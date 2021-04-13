@@ -61,21 +61,23 @@ def clip_and_cast(array):
 
 
 def plot_hybrid(img1, img2, filtered_img1, filtered_img2, save_path):
-    plt.subplot(2, 3, 1)
-    plt.imshow(img1)
-    plt.title('Low-pass (origin)'), plt.xticks([], []), plt.yticks([], [])
+    fs = 10
+    fig, axs = plt.subplots(2, 3, constrained_layout=True)
+    axs = axs.flat
+    for ax in axs:
+        ax.set_xticks([], []), ax.set_yticks([], [])
 
-    plt.subplot(2, 3, 2)
-    plt.imshow(clip_and_cast(filtered_img1))
-    plt.title('Low-pass (filtered)'), plt.xticks([], []), plt.yticks([], [])
+    axs[0].imshow(img1)
+    axs[0].set_title('Low-pass (origin)', fontsize=fs)
 
-    plt.subplot(2, 3, 4)
-    plt.imshow(img2)
-    plt.title('High-pass (origin)'), plt.xticks([], []), plt.yticks([], [])
+    axs[1].imshow(clip_and_cast(filtered_img1))
+    axs[1].set_title('Low-pass (filtered)', fontsize=fs)
 
-    plt.subplot(2, 3, 5)
-    plt.imshow(clip_and_cast(filtered_img2))
-    plt.title('High-pass (filtered)'), plt.xticks([], []), plt.yticks([], [])
+    axs[3].imshow(img2)
+    axs[3].set_title('Low-pass (origin)', fontsize=fs)
+
+    axs[4].imshow(clip_and_cast(filtered_img2))
+    axs[4].set_title('Low-pass (filtered)', fontsize=fs)
 
     plt.subplot(1, 3, 3)
     hybrid_img = clip_and_cast(filtered_img1+filtered_img2)
