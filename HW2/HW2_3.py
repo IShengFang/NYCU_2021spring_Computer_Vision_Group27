@@ -146,7 +146,7 @@ def colorize(
             plt.xticks([]), plt.yticks([])
             if i == 0:
                 plt.gca().text(-0.4, 0.5, 'B', transform=plt.gca().transAxes, **text_kwargs)
-        plt.savefig(os.path.join(save_dir, f'{img_name}_pyramid.png'), dpi=200), plt.clf()
+        plt.savefig(os.path.join(save_dir, f'{img_name}_pyramid_pyd_{pyramid_layer}_size_{filter_size}_sigma_{filter_sigma}.png'), dpi=200), plt.clf()
 
         if base_channel == 'r':
             channel = [g, b, r]
@@ -220,7 +220,7 @@ if __name__ == '__main__':
     os.makedirs(save_dir, exist_ok=True)
 
     img = cv2.imread(args.img_path, cv2.IMREAD_GRAYSCALE)
-    print('Image shape (h, w):', img.shape)
+    print(f'Image: {img_name} {img.shape}')
 
     plt.subplot(1, 3, 1)
     plt.imshow(img, cmap='gray'), plt.xticks([]), plt.yticks([])
