@@ -39,17 +39,17 @@ def magnitude_spectrum(img):
 
 
 def laplacian_pyramid(g_pyramid, num_layers, kernel):
-    res = []
-    for i in range(num_layers):
-        upsample = g_pyramid[i+1]
+    res = [g_pyramid[-1]]
+    for i in range(1, num_layers):
+        upsample = g_pyramid[num_layers-i]
         upsample = upsample.repeat(2, axis=0).repeat(2, axis=1)
-        if g_pyramid[i].shape[0] % 2:
+        if g_pyramid[num_layers-i-1].shape[0] % 2:
             upsample = upsample[:-1,:]
-        if g_pyramid[i].shape[1] % 2:
+        if g_pyramid[num_layers-i-1].shape[1] % 2:
             upsample = upsample[:,:-1]
         upsample = smooth(upsample, kernel)
-        res.append(g_pyramid[i]-upsample)
-    return res
+        res.append(g_pyramid[num_layers-i-1]-upsample)
+    return res[::-1]
 
 
 if __name__ == '__main__':
