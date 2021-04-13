@@ -38,8 +38,8 @@ def manhattan(img1, img2):
 
 
 def zncc(img1, img2):
-    mu_img1 = np.meam(img1)
-    mu_img2 = np.meam(img2)
+    mu_img1 = np.mean(img1)
+    mu_img2 = np.mean(img2)
     std_img1 = np.std(img1)
     std_img2 = np.std(img2)
     return -1 * ((img1-mu_img1)*(img2-mu_img2)/(std_img1*std_img2)).mean()
@@ -257,4 +257,4 @@ if __name__ == '__main__':
         r, g, b, base_channel,
         pyramid_layer, filter_size, filter_sigma,
         measure)
-    cv2.imwrite(os.path.join(save_dir, f'{img_name}_align_pyd_{args.pyramid_layer}_size_{args.filter_size}_sigma_{args.filter_sigma}_{args.measure}.png'), result)
+    cv2.imwrite(os.path.join(save_dir, f'{img_name}_base_{args.base_channel}_align_pyd_{args.pyramid_layer}_size_{args.filter_size}_sigma_{args.filter_sigma}_{args.measure}.png'), result)
