@@ -137,7 +137,7 @@ if __name__=='__main__':
     args = parser.parse_args()
     
     if args.result_name is None:
-        args.result_name = re.sub(r'\..+', '', args.img1_path.split('/')[-1]).split('.')[1]
+        args.result_name = re.sub(r'\..+', '', args.img1_path.split('/')[-1]).split('.')[0]
 
     os.makedirs('task1_result', exist_ok=True)
 

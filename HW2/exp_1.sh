@@ -12,5 +12,5 @@ python HW2_1.py --img1_path ./hw2_data/task1,2_hybrid_pyramid/5_fish.bmp --img2_
 python HW2_1.py --img1_path ./hw2_data/task1,2_hybrid_pyramid/5_fish.bmp --img2_path ./hw2_data/task1,2_hybrid_pyramid/5_submarine.bmp --low_pass_ratio 10 --high_pass_ratio 10
 python HW2_1.py --img1_path ./hw2_data/task1,2_hybrid_pyramid/6_makeup_after.jpg --img2_path ./hw2_data/task1,2_hybrid_pyramid/6_makeup_before.jpg
 python HW2_1.py --img1_path ./hw2_data/task1,2_hybrid_pyramid/6_makeup_after.jpg --img2_path ./hw2_data/task1,2_hybrid_pyramid/6_makeup_before.jpg --low_pass_ratio 10 --high_pass_ratio 10
-python HW2_1.py --img1_path ./our_data/NYMU.jpg --img2_path ./our_data/NCTU.jpg
-python HW2_1.py --img1_path ./our_data/NYMU.jpg --img2_path ./our_data/NCTU.jpg --low_pass_ratio 10 --high_pass_ratio 10
+python HW2_1.py --img1_path ./our_data/NYMU.jpg --img2_path ./our_data/NCTU.jpg --result_name NYCU
+python HW2_1.py --img1_path ./our_data/NYMU.jpg --img2_path ./our_data/NCTU.jpg --low_pass_ratio 10 --high_pass_ratio 10 --result_name NYCU
