@@ -154,11 +154,11 @@ if __name__=='__main__':
         filtered_img2 = np.stack(filtered_img2_channel, axis=2)
 
         # before/after hybrid
-        save_path = os.path.join('task1_result', f'{args.result_name }_hybrid_ideal.png')
+        save_path = os.path.join('task1_result', f'{args.result_name }_hybrid_ideal_low_{args.low_pass_ratio}_high_{args.high_pass_ratio}.png')
         plot_hybrid(img1, img2, filtered_img1, filtered_img2, save_path)
 
         # before/after filtering
-        save_path = os.path.join('task1_result', f'{args.result_name }_filtering_ideal.png')
+        save_path = os.path.join('task1_result', f'{args.result_name }_filtering_ideal_low_{args.low_pass_ratio}_high_{args.high_pass_ratio}.png')
         plot_filtering(
             img1, img2, img1_mag, img2_mag,
             filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag,
@@ -171,11 +171,11 @@ if __name__=='__main__':
         filtered_img2 = np.stack(filtered_img2_channel, axis=2)
 
         # before/after hybrid
-        save_path = os.path.join('task1_result', f'{args.result_name}_hybrid_gaussian.png')
+        save_path = os.path.join('task1_result', f'{args.result_name}_hybrid_gaussian_low_{args.low_pass_ratio}_high_{args.high_pass_ratio}.png')
         plot_hybrid(img1, img2, filtered_img1, filtered_img2, save_path)
 
         # before/after filtering
-        save_path = os.path.join('task1_result', f'{args.result_name}_filtering_gaussian.png')
+        save_path = os.path.join('task1_result', f'{args.result_name}_filtering_gaussian_low_{args.low_pass_ratio}_high_{args.high_pass_ratio}.png')
         plot_filtering(
             img1, img2, img1_mag, img2_mag,
             filtered_img1, filtered_img2, filtered_img1_mag, filtered_img2_mag,
