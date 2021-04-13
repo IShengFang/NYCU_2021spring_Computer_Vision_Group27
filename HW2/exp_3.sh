@@ -12,33 +12,33 @@
 # python HW2_3.py --img_path ./hw2_data/task3_colorizing/village.tif
 # python HW2_3.py --img_path ./hw2_data/task3_colorizing/workshop.tif
 #
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/cathedral.jpg --num_layers 4
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/emir.tif --num_layers 4
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/icon.tif --num_layers 4
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/lady.tif --num_layers 4
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/melons.tif --num_layers 4
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/monastery.jpg --num_layers 4
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/nativity.jpg  --num_layers 4
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/onion_church.tif --num_layers 4
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/three_generations.tif --num_layers 4
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/tobolsk.jpg --num_layers 4
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/train.tif --num_layers 4
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/village.tif --num_layers 4
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/workshop.tif --num_layers 4
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/cathedral.jpg --pyramid_layer 4
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/emir.tif --pyramid_layer 4
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/icon.tif --pyramid_layer 4
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/lady.tif --pyramid_layer 4
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/melons.tif --pyramid_layer 4
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/monastery.jpg --pyramid_layer 4
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/nativity.jpg  --pyramid_layer 4
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/onion_church.tif --pyramid_layer 4
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/three_generations.tif --pyramid_layer 4
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/tobolsk.jpg --pyramid_layer 4
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/train.tif --pyramid_layer 4
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/village.tif --pyramid_layer 4
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/workshop.tif --pyramid_layer 4
 #
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/cathedral.jpg --num_layers 6
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/emir.tif --num_layers 6
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/icon.tif --num_layers 6
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/lady.tif --num_layers 6
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/melons.tif --num_layers 6
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/monastery.jpg --num_layers 6
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/nativity.jpg  --num_layers 6
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/onion_church.tif --num_layers 6
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/three_generations.tif --num_layers 6
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/tobolsk.jpg --num_layers 6
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/train.tif --num_layers 6
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/village.tif --num_layers 6
-python HW2_3.py --img_path ./hw2_data/task3_colorizing/workshop.tif --num_layers 6
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/cathedral.jpg --pyramid_layer 6
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/emir.tif --pyramid_layer 6
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/icon.tif --pyramid_layer 6
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/lady.tif --pyramid_layer 6
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/melons.tif --pyramid_layer 6
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/monastery.jpg --pyramid_layer 6
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/nativity.jpg  --pyramid_layer 6
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/onion_church.tif --pyramid_layer 6
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/three_generations.tif --pyramid_layer 6
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/tobolsk.jpg --pyramid_layer 6
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/train.tif --pyramid_layer 6
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/village.tif --pyramid_layer 6
+python HW2_3.py --img_path ./hw2_data/task3_colorizing/workshop.tif --pyramid_layer 6
 #
 python HW2_3.py --img_path ./hw2_data/task3_colorizing/cathedral.jpg --measure ssim
 python HW2_3.py --img_path ./hw2_data/task3_colorizing/emir.tif --measure ssim

@@ -219,6 +219,7 @@ if __name__ == '__main__':
     save_dir = os.path.join('task3_result', img_name)
     os.makedirs(save_dir, exist_ok=True)
 
+    print(args.img_path)
     img = cv2.imread(args.img_path, cv2.IMREAD_GRAYSCALE)
     print(f'Image: {img_name} {img.shape}')
 
