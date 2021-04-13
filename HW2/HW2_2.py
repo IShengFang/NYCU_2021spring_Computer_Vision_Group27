@@ -26,7 +26,7 @@ def smooth(img, kernel):
 
 def gaussian_pyramid(img, num_layers, kernel):
     res = [np.array(img)]
-    for i in range(num_layers):
+    for i in range(num_layers-1):
         img = smooth(img, kernel)
         img = img[::2,::2]
         res.append(np.array(img))
@@ -71,9 +71,6 @@ if __name__ == '__main__':
     l_pyramid = laplacian_pyramid(g_pyramid, args.num_layers, kernel)
 
     plt.suptitle(f'filter size={args.filter_size}x{args.filter_size}, sigma={args.filter_sigma}')
-    plt.subplot(4, args.num_layers+1, 1)
-    plt.imshow(g_pyramid[0], cmap='gray'), plt.xticks([], []), plt.yticks([], [])
-    plt.title('Level 0', fontsize=12)
 
     text_kwargs = {
         'size': 10,
@@ -82,23 +79,23 @@ if __name__ == '__main__':
         'rotation': 'vertical'
     }
     for i in range(args.num_layers):
-        plt.subplot(4, args.num_layers+1, i+2)
-        plt.imshow(g_pyramid[i+1], cmap='gray'), plt.xticks([], []), plt.yticks([], [])
-        plt.title(f'Level {i+1}', fontsize=12)
+        plt.subplot(4, args.num_layers, i+1)
+        plt.imshow(g_pyramid[i], cmap='gray'), plt.xticks([], []), plt.yticks([], [])
+        plt.title(f'Level {i}', fontsize=12)
         if i == args.num_layers-1:
             plt.gca().text(1.3, 0.5, 'Gaussian', transform=plt.gca().transAxes, **text_kwargs)
 
-        plt.subplot(4, args.num_layers+1, (args.num_layers+1)+2+i)
+        plt.subplot(4, args.num_layers, args.num_layers+1+i)
         plt.imshow(l_pyramid[i], cmap='gray'), plt.xticks([], []), plt.yticks([], [])
         if i == args.num_layers-1:
             plt.gca().text(1.3, 0.5, 'Laplacian', transform=plt.gca().transAxes, **text_kwargs)
 
-        plt.subplot(4, args.num_layers+1, (args.num_layers+1)*2+2+i)
-        plt.imshow(magnitude_spectrum(g_pyramid[i+1])), plt.xticks([], []), plt.yticks([], [])
+        plt.subplot(4, args.num_layers, args.num_layers*2+1+i)
+        plt.imshow(magnitude_spectrum(g_pyramid[i])), plt.xticks([], []), plt.yticks([], [])
         if i == args.num_layers-1:
             plt.gca().text(1.3, 0.5, 'Gaussian', transform=plt.gca().transAxes, **text_kwargs)
 
-        plt.subplot(4, args.num_layers+1, (args.num_layers+1)*3+2+i)
+        plt.subplot(4, args.num_layers, args.num_layers*3+1+i)
         plt.imshow(magnitude_spectrum(l_pyramid[i])), plt.xticks([], []), plt.yticks([], [])
         if i == args.num_layers-1:
             plt.gca().text(1.3, 0.5, 'Laplacian', transform=plt.gca().transAxes, **text_kwargs)
