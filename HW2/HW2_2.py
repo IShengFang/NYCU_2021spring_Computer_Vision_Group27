@@ -103,4 +103,4 @@ if __name__ == '__main__':
         if i == args.num_layers-1:
             plt.gca().text(1.3, 0.5, 'Laplacian', transform=plt.gca().transAxes, **text_kwargs)
 
-    plt.savefig(os.path.join('task2_result', f'{img_name}_pyramid.png'), dpi=300)
+    plt.savefig(os.path.join('task2_result', f'{img_name}_pyramid_size_{arg.filter_size}_sigma_{args.filter_sigma}.png'), dpi=300)
