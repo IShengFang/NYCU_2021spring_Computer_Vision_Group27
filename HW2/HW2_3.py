@@ -130,7 +130,7 @@ def colorize(
         for i in range(pyramid_layer):
             plt.subplot(3, pyramid_layer, i+1)
             plt.imshow(g_pyramid_r[i], cmap='gray')
-            plt.title(f'Level {pyramid_layer-i}')
+            plt.title(f'Level {pyramid_layer-i-1}')
             plt.xticks([]), plt.yticks([])
             if i == 0:
                 plt.gca().text(-0.4, 0.5, 'R', transform=plt.gca().transAxes, **text_kwargs)
