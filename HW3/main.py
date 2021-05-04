@@ -152,7 +152,7 @@ def get_warpping_bb(img, trans):
         [0, 0, 1],
         [img.shape[1], 0, 1],
         [0, img.shape[0], 1],
-        [img.shape[1], img2.shape[0], 1]
+        [img.shape[1], img.shape[0], 1]
     ])
     img_corners = trans @ img_corners.T
     img_corners = img_corners / img_corners[-1,:]
@@ -170,23 +170,37 @@ def get_warpping_bb(img, trans):
     return warp_h, warp_w, img_coors
 
 
-def warpping(img1, img2, trans):
-    warp_h, warp_w, img_coors_warp = get_warpping_bb(img2, trans)
+def warpping(img_for_warp, img, trans):
+    warp_h, warp_w, img_coors_warp = get_warpping_bb(img, trans)
     img_coors_warp = img_coors_warp.reshape(-1, 2)
     img_coors_ori = transform_coors(img_coors_warp, inv(trans))
     img_coors_ori = img_coors_ori.reshape(warp_h, warp_w, -1)[...,:2]
-    resample = mapping(img1, img_coors_ori)
+    resample = mapping(img_for_warp, img_coors_ori)
     return resample.transpose(1, 0, 2)
+
+def blending(img_right, img_left, img_right_warped):
+    blended = img_right_warped.copy()
+    print(blended.shape)
+    print(img_left.shape)
+    blended[img_left.shape[0]:img_left.shape[0]*2, img_left.shape[1]:img_left.shape[1]*2, :] = img_left
+    return blended
 
 
 if __name__ == '__main__':
-    img1 = cv2.imread('./data/2.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
-    img2 = cv2.imread('./data/1.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
-    kp1, des1 = sift(img1)
-    kp2, des2 = sift(img2)
-    src_pts, dest_pts = match_feature(img1, kp1, des1, img2, kp2, des2, 0.5)
+    img_left = cv2.imread('./data/1.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
+    img_right = cv2.imread('./data/2.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
+    print('SIFT....')
+    kp_left, des_left = sift(img_left)
+    kp_right, des_right = sift(img_right)
+    src_pts, dest_pts = match_feature(img_right, kp_right, des_right, img_left, kp_left, des_left, 0.5)
+    print('RANSAC....')
     h, inliers = ransac(src_pts, dest_pts, 10, 3000, 5, 0.9)
     print(h)
-    res = warpping(img1, img2, h)
-    plt.imshow(res)
+    print('warpping....')
+    img_right_warped = warpping(img_right, img_left, h)
+    plt.imshow(img_right_warped)
     plt.savefig('3_warpping.png', dpi=300)
+    # print('blending....')
+    # blended = blending(img_right, img_left, img_right_warped)
+    # plt.imshow(blended)
+    # plt.savefig('4_blending.png', dpi=300)
