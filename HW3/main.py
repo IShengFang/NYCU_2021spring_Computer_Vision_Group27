@@ -162,29 +162,35 @@ def get_warpping_bb(img, trans):
     w_min = img_corners[1,:].min().astype(np.int32)
     w_max = img_corners[1,:].max().astype(np.int32)
 
-    warp_h = h_max - h_min + 1
-    warp_w = w_max - w_min + 1
+    print('h_min', h_min)
+    print('w_min', w_min)
+
+    warp_h = h_max - h_min + 1 + np.abs(h_min)
+    warp_w = w_max - w_min + 1 + np.abs(w_min)
     img_coors = get_image_coors(warp_h, warp_w)
-    img_coors[...,0] += h_min
-    img_coors[...,1] += w_min
-    return warp_h, warp_w, img_coors
+    # img_coors[...,0] -= h_min
+    # img_coors[...,1] += w_min
+    return warp_h, warp_w, img_coors, (h_min, w_min)
 
 
 def warpping(img_for_warp, img, trans):
-    warp_h, warp_w, img_coors_warp = get_warpping_bb(img, trans)
+    warp_h, warp_w, img_coors_warp, left_top_corner = get_warpping_bb(img, trans)
     img_coors_warp = img_coors_warp.reshape(-1, 2)
     img_coors_ori = transform_coors(img_coors_warp, inv(trans))
     img_coors_ori = img_coors_ori.reshape(warp_h, warp_w, -1)[...,:2]
     resample = mapping(img_for_warp, img_coors_ori)
-    return resample.transpose(1, 0, 2)
+    return resample.transpose(1, 0, 2), left_top_corner
 
-def blending(img_right, img_left, img_right_warped):
-    blended = img_right_warped.copy()
-    print(blended.shape)
-    print(img_left.shape)
-    blended[img_left.shape[0]:img_left.shape[0]*2, img_left.shape[1]:img_left.shape[1]*2, :] = img_left
-    return blended
+def blending(img_right, img_left, img_right_warped, warp_corner):
+    print(warp_corner)
+    h_min, w_min = warp_corner
+    bleneded = np.zeros((img_right_warped.shape[0]+h_min, img_right_warped.shape[1]-w_min, 3))
+    print('bleneded', bleneded.shape)
+    bleneded[:img_right_warped.shape[0], :img_right_warped.shape[1], :] = img_right_warped
+    bleneded[h_min:img_left.shape[0]+h_min, 0:img_left.shape[1], :] = img_left
+    return bleneded.astype(int)
 
+    
 
 if __name__ == '__main__':
     img_left = cv2.imread('./data/1.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
@@ -197,10 +203,12 @@ if __name__ == '__main__':
     h, inliers = ransac(src_pts, dest_pts, 10, 3000, 5, 0.9)
     print(h)
     print('warpping....')
-    img_right_warped = warpping(img_right, img_left, h)
+    img_right_warped, warp_corner = warpping(img_right, img_left, h)
+    plt.clf()
     plt.imshow(img_right_warped)
     plt.savefig('3_warpping.png', dpi=300)
-    # print('blending....')
-    # blended = blending(img_right, img_left, img_right_warped)
-    # plt.imshow(blended)
-    # plt.savefig('4_blending.png', dpi=300)
+    print('blending....')
+    blended = blending(img_right, img_left, img_right_warped, warp_corner)
+    plt.imshow(blended)
+    print(blended.max(),blended.min())
+    plt.savefig('4_blending.png', dpi=300)
