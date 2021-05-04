@@ -186,8 +186,34 @@ def resize(img, scale):
     return cv2.resize(img, (w, h))
     
 def blending(img_left, img_right_warped, h_min):
-    bleneded = img_right_warped
+
+    right_mask = img_right_warped.sum(axis=2)
+    right_mask = right_mask>0
+
+    left_img_extend = np.zeros_like(img_right_warped)
+    left_img_extend[h_min:h_min+img_left.shape[0],0:img_left.shape[1]] = img_left
+    left_mask = left_img_extend.sum(axis=2)
+    left_mask = left_mask>0
+
+    overlap = np.logical_and(left_mask, right_mask).astype(np.int32)
+    x_min = (np.where(overlap)[1]).min().astype(np.int32)
+    x_max = (np.where(overlap)[1]).max().astype(np.int32)
+    overlap = overlap[:,:,np.newaxis]
+    alpha_mask = np.zeros_like(img_right_warped).astype(np.float32)
+    alpha_mask[:, x_min:x_max, :] = np.linspace(0, 1, num=x_max-x_min).reshape(1,-1,1).repeat(alpha_mask.shape[0], axis=0)
+    alpha_mask = alpha_mask * overlap
+
+    left_overlap = overlap*left_img_extend
+    right_overlap = overlap*img_right_warped
+
+    overlap_blended = (1-alpha_mask)*left_overlap + alpha_mask*right_overlap
+    overlap_blended = overlap_blended.astype(np.int32)
+
+    bleneded = img_right_warped.copy()
     bleneded[h_min:h_min+img_left.shape[0],0:img_left.shape[1]] = img_left
+
+    bleneded = (1-overlap)*bleneded + overlap*overlap_blended
+
     return bleneded
     
 
