@@ -188,31 +188,45 @@ def resize(img, scale):
 
 
 def blending(img_left, img_right_warped, h_min):
-    bleneded = img_right_warped
-    bleneded[h_min:h_min+img_left.shape[0],0:img_left.shape[1]] = img_left
-    return bleneded
+    blended = img_right_warped
+    # blended[h_min:h_min+img_left.shape[0],0:img_left.shape[1]] = img_left
+    h_left, w_left, _ = img_left.shape
+    leftmost_overlap = w_left
+    for i in range(h_left):
+        for j in range(w_left):
+            if np.sum(blended[h_min+i,j]):
+                leftmost_overlap = min(leftmost_overlap, j)
+
+    for i in range(h_left):
+        for j in range(w_left):
+            if np.sum(blended[h_min+i,j]):
+                alpha = (w_left-j) / (w_left-leftmost_overlap)
+                blended[h_min+i,j] = blended[h_min+i,j]*(1-alpha) + img_left[i,j]*alpha
+            else:
+                blended[h_min+i,j] = img_left[i,j]
+    return blended.astype(np.uint8)
 
 
-def stitching(img_left, img_right):
+def stitching(img_left, img_right, ratio, sample_num, error_thres, inlier_thres):
     print('SIFT....')
     kp_left, des_left = sift(img_left)
     kp_right, des_right = sift(img_right)
-    src_pts, dest_pts = match_feature(img_right, kp_right, des_right, img_left, kp_left, des_left, 0.5)
+    src_pts, dest_pts = match_feature(img_right, kp_right, des_right, img_left, kp_left, des_left, ratio)
 
     print('RANSAC....')
-    H = ransac(src_pts, dest_pts, 10, 3000, 5, 0.9)
+    H = ransac(src_pts, dest_pts, sample_num, 3000, error_thres, inlier_thres)
     print(H)
 
     print('warpping....')
-    h_min, warpped = warpping(img_right, img_left, H)
+    h_min, warped = warpping(img_right, img_left, H)
     h_min = np.abs(h_min)
 
     plt.clf()
-    plt.imshow(warpped)
+    plt.imshow(warped)
     plt.savefig('3_warpping.png', dpi=300)
 
     print('blending....')
-    blended = blending(img_left, warpped, h_min)
+    blended = blending(img_left, warped, h_min)
     plt.clf()
     plt.imshow(blended)
     plt.savefig('4_blending.png', dpi=300)
@@ -223,4 +237,4 @@ def stitching(img_left, img_right):
 if __name__ == '__main__':
     img_left = cv2.imread('./data/1.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
     img_right = cv2.imread('./data/2.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
-    stitched = stitching(img_left, img_right)
+    stitched = stitching(img_left, img_right, 0.6, 10, 5, 0.9)
