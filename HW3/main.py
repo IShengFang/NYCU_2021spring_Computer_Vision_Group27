@@ -42,6 +42,7 @@ def match_feature(img1, kp1, des1, img2, kp2, des2, ratio):
     matches = sorted(matches, key=lambda x: x.distance)
 
     plot_matches = cv2.drawMatches(img1, kp1, img2, kp2, matches[:30], None, flags=0)
+    plt.clf()
     plt.imshow(plot_matches)
     plt.axis('off')
     plt.savefig('2_feature_matching.png', dpi=300)
@@ -102,7 +103,7 @@ def ransac(src_pts, dest_pts, sample_num, iter_num, error_thres, inlier_thres):
         if len(max_inliers) > pt_num*inlier_thres:
             break
 
-    return optimal_h, max_inliers
+    return optimal_h
 
 
 def get_image_coors(h, w):
@@ -157,39 +158,37 @@ def get_warpping_bb(img, trans):
     img_corners = trans @ img_corners.T
     img_corners = img_corners / img_corners[-1,:]
 
-    h_min = img_corners[0,:].min().astype(np.int32)
-    h_max = img_corners[0,:].max().astype(np.int32)
-    w_min = img_corners[1,:].min().astype(np.int32)
-    w_max = img_corners[1,:].max().astype(np.int32)
+    w_min = img_corners[0,:].min().astype(np.int32)
+    w_max = img_corners[0,:].max().astype(np.int32)
+    h_min = img_corners[1,:].min().astype(np.int32)
+    h_max = img_corners[1,:].max().astype(np.int32)
 
-    print('h_min', h_min)
-    print('w_min', w_min)
-
-    warp_h = h_max - h_min + 1 + np.abs(h_min)
     warp_w = w_max - w_min + 1 + np.abs(w_min)
-    img_coors = get_image_coors(warp_h, warp_w)
-    # img_coors[...,0] -= h_min
-    # img_coors[...,1] += w_min
-    return warp_h, warp_w, img_coors, (h_min, w_min)
+    warp_h = h_max - h_min + 1
+    img_coors = get_image_coors(warp_w, warp_h)
+    img_coors[...,1] += h_min
+    return h_min, warp_w, warp_h, img_coors
 
 
-def warpping(img_for_warp, img, trans):
-    warp_h, warp_w, img_coors_warp, left_top_corner = get_warpping_bb(img, trans)
+def warpping(img1, img2, trans):
+    h_min, warp_h, warp_w, img_coors_warp = get_warpping_bb(img2, trans)
     img_coors_warp = img_coors_warp.reshape(-1, 2)
     img_coors_ori = transform_coors(img_coors_warp, inv(trans))
     img_coors_ori = img_coors_ori.reshape(warp_h, warp_w, -1)[...,:2]
-    resample = mapping(img_for_warp, img_coors_ori)
-    return resample.transpose(1, 0, 2), left_top_corner
+    resample = mapping(img1, img_coors_ori)
+    return h_min, resample.transpose(1, 0, 2)
 
-def blending(img_right, img_left, img_right_warped, warp_corner):
-    print(warp_corner)
-    h_min, w_min = warp_corner
-    bleneded = np.zeros((img_right_warped.shape[0]+h_min, img_right_warped.shape[1]-w_min, 3))
-    print('bleneded', bleneded.shape)
-    bleneded[:img_right_warped.shape[0], :img_right_warped.shape[1], :] = img_right_warped
-    bleneded[h_min:img_left.shape[0]+h_min, 0:img_left.shape[1], :] = img_left
-    return bleneded.astype(int)
 
+def resize(img, scale):
+    h, w, _ = img.shape
+    h = int(h*scale)
+    w = int(w*scale)
+    return cv2.resize(img, (w, h))
+    
+def blending(img_left, img_right_warped, h_min):
+    bleneded = img_right_warped
+    bleneded[h_min:h_min+img_left.shape[0],0:img_left.shape[1]] = img_left
+    return bleneded
     
 
 if __name__ == '__main__':
@@ -200,15 +199,18 @@ if __name__ == '__main__':
     kp_right, des_right = sift(img_right)
     src_pts, dest_pts = match_feature(img_right, kp_right, des_right, img_left, kp_left, des_left, 0.5)
     print('RANSAC....')
-    h, inliers = ransac(src_pts, dest_pts, 10, 3000, 5, 0.9)
-    print(h)
+    H = ransac(src_pts, dest_pts, 10, 3000, 5, 0.9)
+    print(H)
     print('warpping....')
-    img_right_warped, warp_corner = warpping(img_right, img_left, h)
+    h_min, warpped = warpping(img_right, img_left, H)
+    h_min = np.abs(h_min)
+
     plt.clf()
-    plt.imshow(img_right_warped)
+    plt.imshow(warpped)
     plt.savefig('3_warpping.png', dpi=300)
+    
     print('blending....')
-    blended = blending(img_right, img_left, img_right_warped, warp_corner)
+    blended = blending(img_left, warpped, h_min)
+    plt.clf()
     plt.imshow(blended)
-    print(blended.max(),blended.min())
     plt.savefig('4_blending.png', dpi=300)
