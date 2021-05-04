@@ -147,15 +147,35 @@ def transform_coors(coors, trans):
     return res
 
 
-def warpping(img1, img2, homo):
-    warp_x = img1.shape[0]
-    warp_y = img1.shape[1] + img2.shape[1]
-    image_coors = get_image_coors(warp_y, warp_x)
+def get_warpping_bb(img, trans):
+    img_corners = np.array([
+        [0, 0, 1],
+        [img.shape[1], 0, 1],
+        [0, img.shape[0], 1],
+        [img.shape[1], img2.shape[0], 1]
+    ])
+    img_corners = trans @ img_corners.T
+    img_corners = img_corners / img_corners[-1,:]
 
-    image_coors = image_coors.reshape(-1, 2)
-    image_coors_ori = transform_coors(image_coors, inv(homo))
-    image_coors_ori = image_coors_ori.reshape(warp_y, warp_x, -1)[...,:2]
-    resample = mapping(img1, image_coors_ori)
+    h_min = img_corners[0,:].min().astype(np.int32)
+    h_max = img_corners[0,:].max().astype(np.int32)
+    w_min = img_corners[1,:].min().astype(np.int32)
+    w_max = img_corners[1,:].max().astype(np.int32)
+
+    warp_h = h_max - h_min + 1
+    warp_w = w_max - w_min + 1
+    img_coors = get_image_coors(warp_h, warp_w)
+    img_coors[...,0] += h_min
+    img_coors[...,1] += w_min
+    return warp_h, warp_w, img_coors
+
+
+def warpping(img1, img2, trans):
+    warp_h, warp_w, img_coors_warp = get_warpping_bb(img2, trans)
+    img_coors_warp = img_coors_warp.reshape(-1, 2)
+    img_coors_ori = transform_coors(img_coors_warp, inv(trans))
+    img_coors_ori = img_coors_ori.reshape(warp_h, warp_w, -1)[...,:2]
+    resample = mapping(img1, img_coors_ori)
     return resample.transpose(1, 0, 2)
 
 
@@ -165,7 +185,7 @@ if __name__ == '__main__':
     kp1, des1 = sift(img1)
     kp2, des2 = sift(img2)
     src_pts, dest_pts = match_feature(img1, kp1, des1, img2, kp2, des2, 0.5)
-    h, inliers = ransac(src_pts, dest_pts, 5, 3000, 5, 0.9)
+    h, inliers = ransac(src_pts, dest_pts, 10, 3000, 5, 0.9)
     print(h)
     res = warpping(img1, img2, h)
     plt.imshow(res)
