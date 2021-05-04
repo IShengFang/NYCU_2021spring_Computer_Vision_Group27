@@ -131,3 +131,10 @@ dmypy.json
 
 .vscode
 .vscode/
+HW1/plot_corners
+HW1/*.npy
+HW2/hw2_data
+HW2/our_data
+HW2/task1_result
+HW2/task2_result
+HW2/task3_result
