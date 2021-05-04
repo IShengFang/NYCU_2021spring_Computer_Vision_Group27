@@ -1,9 +1,25 @@
 # -*- coding: utf-8 -*-
 import cv2
 import random
+import os, argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy.linalg import norm, svd, inv
+
+
+def check_and_make_dir(path):
+    print('check', path)
+    dirs = path.split('/')
+    if path[0] == '/':
+        path = '/'
+    else:
+        path = './'
+    for _dir in dirs:
+        path = os.path.join(path, _dir)
+        print('check', path, os.path.isdir(path))
+        if not os.path.isdir(path):
+            print('mkdir', path)
+            os.mkdir(path)
 
 
 def sift(img):
@@ -30,7 +46,7 @@ def matching(des1, des2, k=1):
     return matches
 
 
-def match_feature(img1, kp1, des1, img2, kp2, des2, ratio):
+def match_feature(img1, kp1, des1, img2, kp2, des2, ratio, results_dir):
     if ratio is None:
         matches = matching(des1, des2, k=1)
     else:
@@ -45,7 +61,7 @@ def match_feature(img1, kp1, des1, img2, kp2, des2, ratio):
     plt.clf()
     plt.imshow(plot_matches)
     plt.axis('off')
-    plt.savefig('2_feature_matching.png', dpi=300)
+    plt.savefig(f'{results_dir}/2_feature_matching.png', dpi=300)
 
     src_pts = []
     dest_pts = []
@@ -217,11 +233,11 @@ def blending(img_left, img_right_warped, h_min):
 
     return bleneded
 
-def stitching(img_left, img_right, ratio, sample_num, error_thres, inlier_thres):
+def stitching(img_left, img_right, ratio, sample_num, error_thres, inlier_thres, results_dir):
     print('SIFT....')
     kp_left, des_left = sift(img_left)
     kp_right, des_right = sift(img_right)
-    src_pts, dest_pts = match_feature(img_right, kp_right, des_right, img_left, kp_left, des_left, ratio)
+    src_pts, dest_pts = match_feature(img_right, kp_right, des_right, img_left, kp_left, des_left, ratio, results_dir)
 
     print('RANSAC....')
     H = ransac(src_pts, dest_pts, sample_num, 3000, error_thres, inlier_thres)
@@ -230,21 +246,32 @@ def stitching(img_left, img_right, ratio, sample_num, error_thres, inlier_thres)
     print('warpping....')
     h_min, warped = warpping(img_right, img_left, H)
     h_min = np.abs(h_min)
-
-    plt.clf()
-    plt.imshow(warped)
-    plt.savefig('3_warpping.png', dpi=300)
+    plt.imsave(f'{results_dir}/3_warpping.png', warped.astype(np.uint8))
 
     print('blending....')
     blended = blending(img_left, warped, h_min)
-    plt.clf()
-    plt.imshow(blended)
-    plt.savefig('4_blending.png', dpi=300)
+    plt.imsave(f'{results_dir}/4_blending.png', blended.astype(np.uint8))
 
     return blended
 
-
 if __name__ == '__main__':
-    img_left = cv2.imread('./data/1.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
-    img_right = cv2.imread('./data/2.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
-    stitched = stitching(img_left, img_right, 0.6, 10, 5, 0.9)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--img_left', type=str, 
+                        default='./data/1.jpg')
+    parser.add_argument('--img_right', type=str, 
+                        default='./data/2.jpg')
+    parser.add_argument('--ratio', type=float, default=0.6)
+    parser.add_argument('--sample_num', type=int, default=10)
+    parser.add_argument('--error_thres', type=int, default=5)
+    parser.add_argument('--inlier_thres', type=float, default=0.9)
+    parser.add_argument('--results_dir', type=str, default='results')
+    args = parser.parse_args()
+
+    check_and_make_dir(args.results_dir)
+    
+
+    img_left = cv2.imread(args.img_left, cv2.IMREAD_COLOR)[:,:,::-1]
+    img_right = cv2.imread(args.img_right, cv2.IMREAD_COLOR)[:,:,::-1]
+    stitched = stitching(img_left, img_right, args.ratio, args.sample_num, 
+                         args.error_thres, args.inlier_thres, args.results_dir)
