@@ -42,6 +42,7 @@ def match_feature(img1, kp1, des1, img2, kp2, des2, ratio):
     matches = sorted(matches, key=lambda x: x.distance)
 
     plot_matches = cv2.drawMatches(img1, kp1, img2, kp2, matches[:30], None, flags=0)
+    plt.clf()
     plt.imshow(plot_matches)
     plt.axis('off')
     plt.savefig('2_feature_matching.png', dpi=300)
@@ -102,7 +103,7 @@ def ransac(src_pts, dest_pts, sample_num, iter_num, error_thres, inlier_thres):
         if len(max_inliers) > pt_num*inlier_thres:
             break
 
-    return optimal_h, max_inliers
+    return optimal_h
 
 
 def get_image_coors(h, w):
@@ -157,36 +158,56 @@ def get_warpping_bb(img, trans):
     img_corners = trans @ img_corners.T
     img_corners = img_corners / img_corners[-1,:]
 
-    h_min = img_corners[0,:].min().astype(np.int32)
-    h_max = img_corners[0,:].max().astype(np.int32)
-    w_min = img_corners[1,:].min().astype(np.int32)
-    w_max = img_corners[1,:].max().astype(np.int32)
+    w_min = img_corners[0,:].min().astype(np.int32)
+    w_max = img_corners[0,:].max().astype(np.int32)
+    h_min = img_corners[1,:].min().astype(np.int32)
+    h_max = img_corners[1,:].max().astype(np.int32)
 
+    warp_w = w_max - w_min + 1 + np.abs(w_min)
     warp_h = h_max - h_min + 1
-    warp_w = w_max - w_min + 1
-    img_coors = get_image_coors(warp_h, warp_w)
-    img_coors[...,0] += h_min
-    img_coors[...,1] += w_min
-    return warp_h, warp_w, img_coors
+    img_coors = get_image_coors(warp_w, warp_h)
+    img_coors[...,1] += h_min
+    return h_min, warp_w, warp_h, img_coors
 
 
 def warpping(img1, img2, trans):
-    warp_h, warp_w, img_coors_warp = get_warpping_bb(img2, trans)
+    h_min, warp_h, warp_w, img_coors_warp = get_warpping_bb(img2, trans)
     img_coors_warp = img_coors_warp.reshape(-1, 2)
     img_coors_ori = transform_coors(img_coors_warp, inv(trans))
     img_coors_ori = img_coors_ori.reshape(warp_h, warp_w, -1)[...,:2]
     resample = mapping(img1, img_coors_ori)
-    return resample.transpose(1, 0, 2)
+    return h_min, resample.transpose(1, 0, 2)
+
+
+def resize(img, scale):
+    h, w, _ = img.shape
+    h = int(h*scale)
+    w = int(w*scale)
+    return cv2.resize(img, (w, h))
 
 
 if __name__ == '__main__':
     img1 = cv2.imread('./data/2.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
+    # img1 = resize(img1, 0.6)
     img2 = cv2.imread('./data/1.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
+    # img2 = resize(img2, 0.6)
+
     kp1, des1 = sift(img1)
     kp2, des2 = sift(img2)
+
     src_pts, dest_pts = match_feature(img1, kp1, des1, img2, kp2, des2, 0.5)
-    h, inliers = ransac(src_pts, dest_pts, 10, 3000, 5, 0.9)
+    h = ransac(src_pts, dest_pts, 10, 3000, 5, 0.9)
     print(h)
-    res = warpping(img1, img2, h)
-    plt.imshow(res)
+
+    h_min, warpped = warpping(img1, img2, h)
+    h_min = np.abs(h_min)
+
+    plt.clf()
+    plt.imshow(warpped)
     plt.savefig('3_warpping.png', dpi=300)
+
+    final = warpped
+    final[h_min:h_min+img2.shape[0],0:img2.shape[1]] = img2
+    plt.clf()
+    plt.imshow(final)
+    plt.savefig('4_final_result.png', dpi=300)
