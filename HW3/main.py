@@ -2,13 +2,13 @@
 import cv2
 import random
 import numpy as np
-from numpy.linalg import norm, svd, inv
 import matplotlib.pyplot as plt
+from numpy.linalg import norm, svd, inv
 
 
-def sift(image):
+def sift(img):
     sift_descriptor = cv2.SIFT_create()
-    kp, des = sift_descriptor.detectAndCompute(image, None)
+    kp, des = sift_descriptor.detectAndCompute(img, None)
     return kp, des
 
 
@@ -28,41 +28,6 @@ def matching(des1, des2, k=1):
             dms.append(dm)
         matches.append(dms[0] if k==1 else dms)
     return matches
-
-# def drawMatchesKnn(img1, kp1, img2, kp2, good):
-
-#     # Combine two images
-#     result = np.concatenate((img1, img2), axis=1)
-
-#     # Collect descriptors' coordinate
-#     src_temp = []
-#     dst_temp = []
-#     for i in good:
-#         src_temp.append(kp1[i[0].queryIdx].pt)
-#         dst_temp.append(kp2[i[0].trainIdx].pt)
-#     src_pts = np.asarray(src_temp) # (n,2)
-#     dst_pts = np.asarray(dst_temp) # (n,2)
-
-#     n, _ = src_pts.shape
-#     h1, w1, c1 = img1.shape
-    
-#     for i in range(n):
-#         color = randomcolor()
-#         x1 = int(src_pts[i,0])
-#         y1 = int(src_pts[i,1])
-#         cv2.circle(result, (x1, y1), 7, color, 1)
-
-#         x2 = w1 + int(dst_pts[i,0])
-#         y2 = int(dst_pts[i,1])
-#         cv2.circle(result, (x2, y2), 7, color, 1)
-
-#         # (y-y1) / (y2-y1) - (x-x1) / (x2-x1)
-#         for x in range(x1, x2):
-#             y = y1 + ((x-x1)/(x2-x1)*(y2-y1))
-#             result[int(y), x] = color
-#         #cv2.line(result, (x1,y1), (x2, y2), color, 1)
-
-#     return result
 
 
 def match_feature(img1, kp1, des1, img2, kp2, des2, ratio):
@@ -109,7 +74,8 @@ def ransac(src_pts, dest_pts, sample_num, iter_num, error_thres, inlier_thres):
     max_inliers = []
     optimal_h = None
     pt_num = len(src_pts)
-    for i in range(iter_num):
+    # for i in range(iter_num):
+    while True:
         rand_idx = np.arange(pt_num)
         np.random.shuffle(rand_idx)
         rand_idx = rand_idx[:sample_num]
@@ -122,13 +88,16 @@ def ransac(src_pts, dest_pts, sample_num, iter_num, error_thres, inlier_thres):
         src_pts_ext = np.hstack((src_pts, np.ones((pt_num, 1))))
         dest_pts_ext = np.hstack((dest_pts, np.ones((pt_num, 1))))
 
-        estimate = (h@src_pts_ext.T).T
+        estimate = h @ src_pts_ext.T
+        estimate = estimate / estimate[-1,:]
+        estimate = estimate.T
         for j in range(pt_num):
             error = norm(estimate[j]-dest_pts_ext[j])        
             if error < error_thres:
                 inliers.append((src_pts[j], dest_pts[j]))
+
         if len(inliers) > len(max_inliers):
-            max_inlier = inliers
+            max_inliers = inliers
             optimal_h = h
         if len(max_inliers) > pt_num*inlier_thres:
             break
@@ -136,10 +105,68 @@ def ransac(src_pts, dest_pts, sample_num, iter_num, error_thres, inlier_thres):
     return optimal_h, max_inliers
 
 
+def get_image_coors(h, w):
+    coors = np.empty((h, w, 2), dtype=np.float32)
+    for i, t in enumerate(np.ix_(np.arange(h), np.arange(w))):
+        coors[...,i] = t
+    return coors
+
+
+def bilinear(img, x, y, x1, y1, x2, y2):
+    res = (img[x1,y1]*(x2-x)*(y2-y)
+            + img[x1,y2]*(x2-x)*(y-y1)
+            + img[x2,y1]*(x-x1)*(y2-y)
+            + img[x2,y2]*(x-x1)*(y-y1))
+    return res.astype(np.uint8)
+
+
+def nn(img, x, y, x1, y1, x2, y2):
+    nn_x = x2 if x-x1>0.5 else x1
+    nn_y = y2 if y-y1>0.5 else y1
+    return img[nn_x,nn_y].astype(np.uint8)
+
+
+def mapping(img, coors):
+    ret = np.zeros((coors.shape[0], coors.shape[1], img.shape[2]), dtype=np.uint8)
+    h, w, _ = coors.shape
+    for i in range(h):
+        for j in range(w):
+            x, y = coors[i,j,1], coors[i,j,0]
+            x1, y1 = int(x), int(y)
+            x2, y2 = x1+1, y1+1
+            if x1>=0 and x2<img.shape[0] and y1>=0 and y2<img.shape[1]:
+                ret[i,j] = bilinear(img, x, y, x1, y1, x2, y2)
+    return ret
+
+
+def transform_coors(coors, trans):
+    m_ext = np.hstack((coors, np.ones((coors.shape[0], 1))))
+    res = trans @ m_ext.T
+    res = res / res[-1,:]
+    res = res.T
+    return res
+
+
+def warpping(img1, img2, homo):
+    warp_x = img1.shape[0]
+    warp_y = img1.shape[1] + img2.shape[1]
+    image_coors = get_image_coors(warp_y, warp_x)
+
+    image_coors = image_coors.reshape(-1, 2)
+    image_coors_ori = transform_coors(image_coors, inv(homo))
+    image_coors_ori = image_coors_ori.reshape(warp_y, warp_x, -1)[...,:2]
+    resample = mapping(img1, image_coors_ori)
+    return resample.transpose(1, 0, 2)
+
+
 if __name__ == '__main__':
-    img1 = cv2.imread('./data/1.jpg', cv2.IMREAD_GRAYSCALE)
-    img2 = cv2.imread('./data/2.jpg', cv2.IMREAD_GRAYSCALE)
+    img1 = cv2.imread('./data/2.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
+    img2 = cv2.imread('./data/1.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
     kp1, des1 = sift(img1)
     kp2, des2 = sift(img2)
-    src_pts, dest_pts = match_feature(img1, kp1, des1, img2, kp2, des2, 0.6)
-    h, inliers = ransac(src_pts, dest_pts, 10, 1000, 10, 0.7)
+    src_pts, dest_pts = match_feature(img1, kp1, des1, img2, kp2, des2, 0.5)
+    h, inliers = ransac(src_pts, dest_pts, 5, 3000, 5, 0.9)
+    print(h)
+    res = warpping(img1, img2, h)
+    plt.imshow(res)
+    plt.savefig('3_warpping.png', dpi=300)
