@@ -41,7 +41,7 @@ def match_feature(img1, kp1, des1, img2, kp2, des2, ratio):
                 matches.append(m1)
     matches = sorted(matches, key=lambda x: x.distance)
 
-    plot_matches = cv2.drawMatches(img1, kp1, img2, kp2, matches[:30], None, flags=0)
+    plot_matches = cv2.drawMatches(img1, kp1, img2, kp2, matches[:30], None, flags=2)
     plt.clf()
     plt.imshow(plot_matches)
     plt.axis('off')
@@ -93,7 +93,7 @@ def ransac(src_pts, dest_pts, sample_num, iter_num, error_thres, inlier_thres):
         estimate = estimate / estimate[-1,:]
         estimate = estimate.T
         for j in range(pt_num):
-            error = norm(estimate[j]-dest_pts_ext[j])        
+            error = norm(estimate[j]-dest_pts_ext[j])
             if error < error_thres:
                 inliers.append((src_pts[j], dest_pts[j]))
 
@@ -137,6 +137,7 @@ def mapping(img, coors):
             x2, y2 = x1+1, y1+1
             if x1>=0 and x2<img.shape[0] and y1>=0 and y2<img.shape[1]:
                 ret[i,j] = bilinear(img, x, y, x1, y1, x2, y2)
+                # ret[i,j] = nn(img, x, y, x1, y1, x2, y2)
     return ret
 
 
@@ -217,26 +218,55 @@ def blending(img_left, img_right_warped, h_min):
     return bleneded
     
 
-if __name__ == '__main__':
-    img_left = cv2.imread('./data/1.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
-    img_right = cv2.imread('./data/2.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
+
+def blending(img_left, img_right_warped, h_min):
+    blended = img_right_warped
+    # blended[h_min:h_min+img_left.shape[0],0:img_left.shape[1]] = img_left
+    h_left, w_left, _ = img_left.shape
+    leftmost_overlap = w_left
+    for i in range(h_left):
+        for j in range(w_left):
+            if np.sum(blended[h_min+i,j]):
+                leftmost_overlap = min(leftmost_overlap, j)
+
+    for i in range(h_left):
+        for j in range(w_left):
+            if np.sum(blended[h_min+i,j]):
+                alpha = (w_left-j) / (w_left-leftmost_overlap)
+                blended[h_min+i,j] = blended[h_min+i,j]*(1-alpha) + img_left[i,j]*alpha
+            else:
+                blended[h_min+i,j] = img_left[i,j]
+    return blended.astype(np.uint8)
+
+
+def stitching(img_left, img_right, ratio, sample_num, error_thres, inlier_thres):
     print('SIFT....')
     kp_left, des_left = sift(img_left)
     kp_right, des_right = sift(img_right)
-    src_pts, dest_pts = match_feature(img_right, kp_right, des_right, img_left, kp_left, des_left, 0.5)
+    src_pts, dest_pts = match_feature(img_right, kp_right, des_right, img_left, kp_left, des_left, ratio)
+
     print('RANSAC....')
-    H = ransac(src_pts, dest_pts, 10, 3000, 5, 0.9)
+    H = ransac(src_pts, dest_pts, sample_num, 3000, error_thres, inlier_thres)
     print(H)
+
     print('warpping....')
-    h_min, warpped = warpping(img_right, img_left, H)
+    h_min, warped = warpping(img_right, img_left, H)
     h_min = np.abs(h_min)
 
     plt.clf()
-    plt.imshow(warpped)
+    plt.imshow(warped)
     plt.savefig('3_warpping.png', dpi=300)
-    
+
     print('blending....')
-    blended = blending(img_left, warpped, h_min)
+    blended = blending(img_left, warped, h_min)
     plt.clf()
     plt.imshow(blended)
     plt.savefig('4_blending.png', dpi=300)
+
+    return blended
+
+
+if __name__ == '__main__':
+    img_left = cv2.imread('./data/1.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
+    img_right = cv2.imread('./data/2.jpg', cv2.IMREAD_COLOR)[:,:,::-1]
+    stitched = stitching(img_left, img_right, 0.6, 10, 5, 0.9)
