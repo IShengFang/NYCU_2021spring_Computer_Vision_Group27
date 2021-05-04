@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import os
 import cv2
 import random
-import os, argparse
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy.linalg import norm, svd, inv
@@ -91,6 +92,7 @@ def ransac(src_pts, dest_pts, sample_num, iter_num, error_thres, inlier_thres):
     max_inliers = []
     optimal_h = None
     pt_num = len(src_pts)
+    print(f'total: {pt_num} pairs')
     # for i in range(iter_num):
     while True:
         rand_idx = np.arange(pt_num)
@@ -188,7 +190,7 @@ def get_warpping_bb(img, trans):
 
 
 def warpping(img1, img2, trans):
-    h_min, warp_h, warp_w, img_coors_warp = get_warpping_bb(img2, trans)
+    h_min, warp_h, warp_w, img_coors_warp = get_warpping_bb(img1, trans)
     img_coors_warp = img_coors_warp.reshape(-1, 2)
     img_coors_ori = transform_coors(img_coors_warp, inv(trans))
     img_coors_ori = img_coors_ori.reshape(warp_h, warp_w, -1)[...,:2]
@@ -254,7 +256,12 @@ def stitching(img_left, img_right, ratio, sample_num, error_thres, inlier_thres,
     blended = blending(img_left, warped, h_min)
     plt.imsave(f'{results_dir}/4_blending.png', blended.astype(np.uint8))
 
-    return blended
+    print('cropping....')
+    max_h = min(h_min+img_left.shape[0], blended.shape[0])
+    blended = blended[h_min:max_h,]
+    plt.imsave(f'{results_dir}/5_cropping.png', blended.astype(np.uint8))
+
+    return blended.astype(np.uint8)
 
 
 if __name__ == '__main__':
@@ -265,7 +272,7 @@ if __name__ == '__main__':
                         default='./data/2.jpg')
     parser.add_argument('--ratio', type=float, default=0.6)
     parser.add_argument('--sample_num', type=int, default=10)
-    parser.add_argument('--error_thres', type=int, default=5)
+    parser.add_argument('--error_thres', type=float, default=5)
     parser.add_argument('--inlier_thres', type=float, default=0.9)
     parser.add_argument('--results_dir', type=str, default='results')
     args = parser.parse_args()
