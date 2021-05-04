@@ -201,7 +201,7 @@ def blending(img_left, img_right_warped, h_min):
     x_max = (np.where(overlap)[1]).max().astype(np.int32)
     overlap = overlap[:,:,np.newaxis]
     alpha_mask = np.zeros_like(img_right_warped).astype(np.float32)
-    alpha_mask[:, x_min:x_max, :] = np.linspace(0, 1, num=x_max-x_min).reshape(1,-1,1).repeat(alpha_mask.shape[0], axis=0)
+    alpha_mask[:, x_min:x_max+1, :] = np.linspace(0, 1, num=x_max-x_min+1).reshape(1,-1,1).repeat(alpha_mask.shape[0], axis=0)
     alpha_mask = alpha_mask * overlap
 
     left_overlap = overlap*left_img_extend
@@ -216,28 +216,6 @@ def blending(img_left, img_right_warped, h_min):
     bleneded = (1-overlap)*bleneded + overlap*overlap_blended
 
     return bleneded
-    
-
-
-def blending(img_left, img_right_warped, h_min):
-    blended = img_right_warped
-    # blended[h_min:h_min+img_left.shape[0],0:img_left.shape[1]] = img_left
-    h_left, w_left, _ = img_left.shape
-    leftmost_overlap = w_left
-    for i in range(h_left):
-        for j in range(w_left):
-            if np.sum(blended[h_min+i,j]):
-                leftmost_overlap = min(leftmost_overlap, j)
-
-    for i in range(h_left):
-        for j in range(w_left):
-            if np.sum(blended[h_min+i,j]):
-                alpha = (w_left-j) / (w_left-leftmost_overlap)
-                blended[h_min+i,j] = blended[h_min+i,j]*(1-alpha) + img_left[i,j]*alpha
-            else:
-                blended[h_min+i,j] = img_left[i,j]
-    return blended.astype(np.uint8)
-
 
 def stitching(img_left, img_right, ratio, sample_num, error_thres, inlier_thres):
     print('SIFT....')
