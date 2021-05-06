@@ -182,20 +182,22 @@ def get_warpping_bb(img, trans):
     h_min = img_corners[1,:].min().astype(np.int32)
     h_max = img_corners[1,:].max().astype(np.int32)
 
+    right_w_min = int(min(img_corners[0,1], img_corners[0,3]))
+
     warp_w = w_max - w_min + 1 + np.abs(w_min)
     warp_h = h_max - h_min + 1
     img_coors = get_image_coors(warp_w, warp_h)
     img_coors[...,1] += h_min
-    return h_min, warp_w, warp_h, img_coors
+    return h_min, right_w_min, warp_w, warp_h, img_coors
 
 
 def warpping(img1, img2, trans):
-    h_min, warp_h, warp_w, img_coors_warp = get_warpping_bb(img1, trans)
+    h_min, right_w_min, warp_h, warp_w, img_coors_warp = get_warpping_bb(img1, trans)
     img_coors_warp = img_coors_warp.reshape(-1, 2)
     img_coors_ori = transform_coors(img_coors_warp, inv(trans))
     img_coors_ori = img_coors_ori.reshape(warp_h, warp_w, -1)[...,:2]
     resample = mapping(img1, img_coors_ori)
-    return h_min, resample.transpose(1, 0, 2)
+    return h_min, right_w_min, resample.transpose(1, 0, 2)
 
 
 def resize(img, scale):
@@ -248,7 +250,7 @@ def stitching(img_left, img_right, ratio, sample_num, error_thres, inlier_thres,
     print(H)
 
     print('warpping....')
-    h_min, warped = warpping(img_right, img_left, H)
+    h_min, right_w_min, warped = warpping(img_right, img_left, H)
     h_min = np.abs(h_min)
     plt.imsave(f'{results_dir}/3_warpping.png', warped.astype(np.uint8))
 
@@ -258,7 +260,7 @@ def stitching(img_left, img_right, ratio, sample_num, error_thres, inlier_thres,
 
     print('cropping....')
     max_h = min(h_min+img_left.shape[0], blended.shape[0])
-    blended = blended[h_min:max_h,]
+    blended = blended[h_min:max_h,:right_w_min]
     plt.imsave(f'{results_dir}/5_cropping.png', blended.astype(np.uint8))
 
     return blended.astype(np.uint8)
