@@ -58,11 +58,8 @@ def match_feature(img1, kp1, des1, img2, kp2, des2, ratio, results_dir):
                 matches.append(m1)
     matches = sorted(matches, key=lambda x: x.distance)
 
-    plot_matches = cv2.drawMatches(img1, kp1, img2, kp2, matches[:30], None, flags=2)
-    plt.clf()
-    plt.imshow(plot_matches)
-    plt.axis('off')
-    plt.savefig(f'{results_dir}/2_feature_matching.png', dpi=300)
+    plot_matches = cv2.drawMatches(img1, kp1, img2, kp2, matches[:50], None, flags=2)
+    plt.imsave(f'{results_dir}/2_feature_matching.png', plot_matches.astype(np.uint8))
 
     src_pts = []
     dest_pts = []
@@ -93,8 +90,8 @@ def ransac(src_pts, dest_pts, sample_num, iter_num, error_thres, inlier_thres):
     optimal_h = None
     pt_num = len(src_pts)
     print(f'total: {pt_num} pairs')
-    # for i in range(iter_num):
-    while True:
+    for i in range(iter_num):
+    # while True:
         rand_idx = np.arange(pt_num)
         np.random.shuffle(rand_idx)
         rand_idx = rand_idx[:sample_num]
@@ -118,7 +115,7 @@ def ransac(src_pts, dest_pts, sample_num, iter_num, error_thres, inlier_thres):
         if len(inliers) > len(max_inliers):
             max_inliers = inliers
             optimal_h = h
-        if len(max_inliers) > pt_num*inlier_thres:
+        if len(max_inliers) >= pt_num*inlier_thres:
             break
 
     return optimal_h
