@@ -164,7 +164,7 @@ def transform_coors(coors, trans):
     return res
 
 
-def get_warpping_bb(img, trans):
+def get_warping_bb(img, trans):
     img_corners = np.array([
         [0, 0, 1],
         [img.shape[1], 0, 1],
@@ -188,8 +188,8 @@ def get_warpping_bb(img, trans):
     return h_min, right_w_min, warp_w, warp_h, img_coors
 
 
-def warpping(img1, img2, trans):
-    h_min, right_w_min, warp_h, warp_w, img_coors_warp = get_warpping_bb(img1, trans)
+def warping(img1, img2, trans):
+    h_min, right_w_min, warp_h, warp_w, img_coors_warp = get_warping_bb(img1, trans)
     img_coors_warp = img_coors_warp.reshape(-1, 2)
     img_coors_ori = transform_coors(img_coors_warp, inv(trans))
     img_coors_ori = img_coors_ori.reshape(warp_h, warp_w, -1)[...,:2]
@@ -246,10 +246,10 @@ def stitching(img_left, img_right, ratio, sample_num, error_thres, inlier_thres,
     H = ransac(src_pts, dest_pts, sample_num, 3000, error_thres, inlier_thres)
     print(H)
 
-    print('warpping....')
-    h_min, right_w_min, warped = warpping(img_right, img_left, H)
+    print('warping....')
+    h_min, right_w_min, warped = warping(img_right, img_left, H)
     h_min = np.abs(h_min)
-    plt.imsave(f'{results_dir}/3_warpping.png', warped.astype(np.uint8))
+    plt.imsave(f'{results_dir}/3_warping.png', warped.astype(np.uint8))
 
     print('blending....')
     blended = blending(img_left, warped, h_min)
