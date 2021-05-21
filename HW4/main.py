@@ -146,6 +146,29 @@ def drawlines(img1, pts1, img2, pts2, lines):
         new_img2 = cv2.circle(new_img2, tuple(pt2[0:2]), 5, color, -1)
     return new_img1, new_img2
 
+def essential_matrix(pts1, pts2, F):
+    E = pts1.T @ H @ pts2
+    U,S,V = np.linalg.svd(E)
+    m = (S[0]+S[1])/2
+    E = U @ np.diag((m,m,0)) @ V
+    return E
+
+def four_possible_solution_of_essential_matrix(E):
+    U, S, V = np.linalg.svd(E)
+    if np.linalg.det(U @ V) < 0 :
+        V = -V
+    W = np.array([[0,-1, 0],
+                  [1, 0, 0], 
+                  [0, 0, 1]])
+    R = U @ W @ V.T
+    t = U[:, 2:]
+    P1 = np.hstack((R,t))
+    P2 = np.hstack((R,-t))
+    R = U @ W.T @ V.T
+    P3 = np.hstack((R,t))
+    P4 = np.hstack((R,-t))
+
+    return P1, P2, P3, P4
 
 if __name__ == '__main__':
     img1 = cv2.imread('./Mesona1.JPG')
@@ -207,3 +230,6 @@ if __name__ == '__main__':
     axs[1].axis('off')
     plt.savefig('lines_on_img2.png', dpi=300)
     
+    print('Get 4 possible solutions of essential matrix from fundamental matrix')
+    E = essential_matrix(best_match_kp1, best_match_kp2, F)
+    P1, P2, P3, P4 = four_possible_solution_of_essential_matrix(E)
