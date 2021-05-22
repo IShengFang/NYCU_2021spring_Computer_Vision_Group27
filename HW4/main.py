@@ -200,9 +200,22 @@ def plot_pred_points(pred_pts):
     ax.set_zlabel('z axis')
     plt.show()
 
+def use_matlab_for_final_results(pred_pts, keypoints, P, img_name):
+    import matlab.engine
+    eng = matlab.engine.start_matlab()
+    eng.obj_main(
+        matlab.double(pred_pts[:,:3].tolist()), 
+        matlab.double(keypoints.tolist()), 
+        matlab.double(P.tolist()), 
+        './{}'.format(img_name), 
+        1.0, 
+        nargout=0)
+
 if __name__ == '__main__':
-    img1 = cv2.imread('./Mesona1.JPG')
-    img2 = cv2.imread('./Mesona2.JPG')
+    img1_name = 'Mesona1.JPG'
+    img2_name = 'Mesona2.JPG'
+    img1 = cv2.imread(f'./{img1_name}')
+    img2 = cv2.imread(f'./{img2_name}')
 
     K1 = np.array([
         [1.4219, 0.0005, 0.5092],
@@ -279,3 +292,4 @@ if __name__ == '__main__':
 
     print('apply triangulation to get 3D points')
     plot_pred_points(most_apprx_pred_pt)
+    use_matlab_for_final_results(most_apprx_pred_pt, best_match_kp1, P1, img1_name)
