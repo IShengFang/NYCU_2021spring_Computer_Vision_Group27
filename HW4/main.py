@@ -175,6 +175,8 @@ def four_possible_solution_of_essential_matrix(E):
 
 def triangulation(x1, x2, P1, P2):
     pred_pt = np.ones((x1.shape[0], 4))
+    C = P2[:,:3].T @ P2[:, 3:]
+    infront_num = 0
     for i in range(x1.shape[0]):
         A = np.asarray([
             (x1[i, 0] * P1[2, :].T - P1[0, :].T),
@@ -183,8 +185,11 @@ def triangulation(x1, x2, P1, P2):
             (x2[i, 1] * P2[2, :].T - P2[1, :].T)
         ])
         U, S, V = np.linalg.svd(A)
-        pred_pt[i, :] = V[-1]/V[-1][3]
-    return pred_pt
+        pred_pt_i = V[-1]/V[-1][3]
+        pred_pt[i, :] = pred_pt_i
+        if (pred_pt_i[:3].reshape(-1,1)-C)@P2[2:,:3] >0:
+            infront_num += 1
+    return pred_pt, infront_num
 
 if __name__ == '__main__':
     img1 = cv2.imread('./Mesona1.JPG')
@@ -253,13 +258,14 @@ if __name__ == '__main__':
 
     print('find out the most appropriate solution of essential matrix')
     P1 = K1@np.eye(3,4)
+    largest_infornt_num = 0
     for P2 in P2s:
         P2 = K2@P2
-        pred_pt = triangulation(best_match_kp1, best_match_kp2, P1, P2)
+        pred_pt, infront_num = triangulation(best_match_kp1, best_match_kp2, P1, P2)
         C = P2[:,:3] @ P2[:, 3].T
-        infront_point_num = 0
-        for i in range(pred_pt.shape[0]):
-            if i-C @
-            if np.dot((i - C), P2[:,2].T) > 0:
-                infront += 1
+        if infront_num>largest_infornt_num:
+            largest_infornt_num = infront_num
+            most_apprx_P2 = P2
+            most_apprx_pred_pt = pred_pt
+
     print('apply triangulation to get 3D points')
