@@ -190,6 +190,7 @@ def triangulation(x1, x2, P1, P2):
     return pred_pt, infront_num
 
 def plot_pred_points(pred_pts):
+    plt.clf()
     fig = plt.figure()
     ax = Axes3D(fig)
     for i in range(pred_pts.shape[0]):
