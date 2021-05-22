@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from numpy.linalg import norm, svd
 
 
@@ -147,9 +148,6 @@ def drawlines(img1, pts1, img2, pts2, lines):
     return new_img1, new_img2
 
 def essential_matrix(pts1, pts2, F):
-    print(pts1.T.shape)
-    print(F.shape)
-    print(pts2.shape)
     E = pts1.T @ F @ pts2
     U,S,V = np.linalg.svd(E)
     m = (S[0]+S[1])/2
@@ -187,9 +185,19 @@ def triangulation(x1, x2, P1, P2):
         U, S, V = np.linalg.svd(A)
         pred_pt_i = V[-1]/V[-1][3]
         pred_pt[i, :] = pred_pt_i
-        if (pred_pt_i[:3].reshape(-1,1)-C)@P2[2:,:3] >0:
+        if np.dot((pred_pt_i[:3]-C.reshape(-1)), P2[2,:3]) > 0:
             infront_num += 1
     return pred_pt, infront_num
+
+def plot_pred_points(pred_pts):
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    for i in range(pred_pts.shape[0]):
+        ax.scatter(pred_pts[i, 0], pred_pts[i, 1], pred_pts[i, 2])
+    ax.set_xlabel('x axis')
+    ax.set_ylabel('y axis')
+    ax.set_zlabel('z axis')
+    plt.show()
 
 if __name__ == '__main__':
     img1 = cv2.imread('./Mesona1.JPG')
@@ -269,3 +277,4 @@ if __name__ == '__main__':
             most_apprx_pred_pt = pred_pt
 
     print('apply triangulation to get 3D points')
+    plot_pred_points(most_apprx_pred_pt)
