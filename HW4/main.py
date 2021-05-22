@@ -171,7 +171,20 @@ def four_possible_solution_of_essential_matrix(E):
     P2_2 = np.hstack((R,t))
     P2_3 = np.hstack((R,-t))
 
-    return P2_0, P2_1, P2_2, P2_3
+    return [P2_0, P2_1, P2_2, P2_3]
+
+def triangulation(x1, x2, P1, P2):
+    pred_pt = np.ones((x1.shape[0], 4))
+    for i in range(x1.shape[0]):
+        A = np.asarray([
+            (x1[i, 0] * P1[2, :].T - P1[0, :].T),
+            (x1[i, 1] * P1[2, :].T - P1[1, :].T),
+            (x2[i, 0] * P2[2, :].T - P2[0, :].T),
+            (x2[i, 1] * P2[2, :].T - P2[1, :].T)
+        ])
+        U, S, V = np.linalg.svd(A)
+        pred_pt[i, :] = V[-1]/V[-1][3]
+    return pred_pt
 
 if __name__ == '__main__':
     img1 = cv2.imread('./Mesona1.JPG')
@@ -205,7 +218,8 @@ if __name__ == '__main__':
 
     print('Feature matching....')
     match_kp1, match_kp2 = match_feature(img1, kp1, des1, img2, kp2, des2, 0.5, '.')
-
+    print('match_kp1', match_kp1.shape)
+    print('match_kp2', match_kp2.shape)
     print('RANSAC....')
     F, best_match_kp1, best_match_kp2 = RANSAC(match_kp1, match_kp2)
 
@@ -235,10 +249,17 @@ if __name__ == '__main__':
     
     print('Get 4 possible solutions of essential matrix from fundamental matrix')
     E = essential_matrix(K1, K2, F)
-    P2_0, P2_1, P2_2, P2_3 = four_possible_solution_of_essential_matrix(E)
-    print(P2_0)
-    print(P2_0.shape)
+    P2s = four_possible_solution_of_essential_matrix(E)
 
     print('find out the most appropriate solution of essential matrix')
-
+    P1 = K1@np.eye(3,4)
+    for P2 in P2s:
+        P2 = K2@P2
+        pred_pt = triangulation(best_match_kp1, best_match_kp2, P1, P2)
+        C = P2[:,:3] @ P2[:, 3].T
+        infront_point_num = 0
+        for i in range(pred_pt.shape[0]):
+            if i-C @
+            if np.dot((i - C), P2[:,2].T) > 0:
+                infront += 1
     print('apply triangulation to get 3D points')
