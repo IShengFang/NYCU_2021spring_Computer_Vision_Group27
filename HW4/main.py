@@ -232,4 +232,8 @@ if __name__ == '__main__':
     
     print('Get 4 possible solutions of essential matrix from fundamental matrix')
     E = essential_matrix(best_match_kp1, best_match_kp2, F)
-    P1, P2, P3, P4 = four_possible_solution_of_essential_matrix(E)
+    P2_0, P2_1, P2_3, P2_4 = four_possible_solution_of_essential_matrix(E)
+
+    print('find out the most appropriate solution of essential matrix')
+
+    print('apply triangulation to get 3D points')
