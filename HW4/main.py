@@ -147,7 +147,7 @@ def drawlines(img1, pts1, img2, pts2, lines):
     return new_img1, new_img2
 
 def essential_matrix(pts1, pts2, F):
-    E = pts1.T @ H @ pts2
+    E = pts1.T @ F @ pts2
     U,S,V = np.linalg.svd(E)
     m = (S[0]+S[1])/2
     E = U @ np.diag((m,m,0)) @ V
@@ -233,6 +233,7 @@ if __name__ == '__main__':
     print('Get 4 possible solutions of essential matrix from fundamental matrix')
     E = essential_matrix(best_match_kp1, best_match_kp2, F)
     P2_0, P2_1, P2_3, P2_4 = four_possible_solution_of_essential_matrix(E)
+    print(P2_0.shape)
 
     print('find out the most appropriate solution of essential matrix')
 
