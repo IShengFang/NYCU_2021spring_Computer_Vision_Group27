@@ -3,4 +3,4 @@ newmtl Texture
 Ka 1 1 1
 Kd 1 1 1
 Ks 1 1 1
-map_Kd ././BOX2_0.jpg
+map_Kd ./BOX_0.jpg
