@@ -161,7 +161,7 @@ def essential_matrix(K1, K2, F):
     return E
 
 
-def four_possible_solution_of_essential_matrix(E):
+def four_possible_solution_of_second_camera_matrix(E):
     U, S, V = np.linalg.svd(E)
     if np.linalg.det(U@V):
         V = -V
@@ -313,7 +313,7 @@ if __name__ == '__main__':
     
     print('Get 4 possible solutions of essential matrix from fundamental matrix....')
     E = essential_matrix(K1, K2, F)
-    P2s = four_possible_solution_of_essential_matrix(E)
+    P2s = four_possible_solution_of_second_camera_matrix(E)
 
     print('Find out the most appropriate solution of essential matrix....')
     P1 = K1 @ np.eye(3, 4)
