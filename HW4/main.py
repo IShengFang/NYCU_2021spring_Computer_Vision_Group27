@@ -282,8 +282,8 @@ if __name__ == '__main__':
     print('Feature matching....')
     match_kp1, match_kp2 = match_feature(img1, kp1, des1, img2, kp2, des2, args.match_ratio, args.output_dir)
     print('match_kp1', match_kp1.shape)
-
     print('match_kp2', match_kp2.shape)
+
     print('RANSAC....')
     F, best_match_kp1, best_match_kp2 = RANSAC(match_kp1, match_kp2, conf=args.ransac_conf, quiet=False)
 
