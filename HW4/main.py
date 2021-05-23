@@ -38,7 +38,6 @@ def match_feature(img1, kp1, des1, img2, kp2, des2, ratio, results_dir):
     for m, n in matches:
         if m.distance/n.distance < ratio:
             good_match.append(m)
-    # plot_match = cv2.drawMatches(img1, kp1, img2, kp2, good_match[:50], None, flags=2)
     plot_match = cv2.drawMatches(img1, kp1, img2, kp2, good_match, None, flags=2)
     plt.imsave(f'{results_dir}/feature_matching.png', plot_match.astype(np.uint8))
     match_kp1 = []
@@ -229,6 +228,8 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--output_dir', type=str, default='results')
     parser.add_argument('--image_set', type=str, default='mesona', help='mesona, statue, nerv')
+    parser.add_argument('--match_ratio', type=float, default=0.5)
+    parser.add_argument('--ransac_conf', type=float, default=0.9)
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
@@ -279,12 +280,12 @@ if __name__ == '__main__':
     plt.imsave(os.path.join(args.output_dir, 'img2_kp.png'), img2_kp)
 
     print('Feature matching....')
-    match_kp1, match_kp2 = match_feature(img1, kp1, des1, img2, kp2, des2, 0.5, args.output_dir)
+    match_kp1, match_kp2 = match_feature(img1, kp1, des1, img2, kp2, des2, args.match_ratio, args.output_dir)
     print('match_kp1', match_kp1.shape)
 
     print('match_kp2', match_kp2.shape)
     print('RANSAC....')
-    F, best_match_kp1, best_match_kp2 = RANSAC(match_kp1, match_kp2, conf=0.9, quiet=False)
+    F, best_match_kp1, best_match_kp2 = RANSAC(match_kp1, match_kp2, conf=args.ransac_conf, quiet=False)
 
     print('Draw epipolar lines on image 1....')
     lines_on_img1 = compute_epipolar_line(F.T, best_match_kp2)
