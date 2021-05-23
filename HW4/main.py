@@ -31,12 +31,15 @@ def matching(des1, des2):
 
 
 def match_feature(img1, kp1, des1, img2, kp2, des2, ratio, results_dir):
+    print('des1', des1.shape)
+    print('des2', des2.shape)
     matches = matching(des1, des2)
     good_match = []
     for m, n in matches:
         if m.distance/n.distance < ratio:
             good_match.append(m)
-    plot_match = cv2.drawMatches(img1, kp1, img2, kp2, good_match[:50], None, flags=2)
+    # plot_match = cv2.drawMatches(img1, kp1, img2, kp2, good_match[:50], None, flags=2)
+    plot_match = cv2.drawMatches(img1, kp1, img2, kp2, good_match, None, flags=2)
     plt.imsave(f'{results_dir}/feature_matching.png', plot_match.astype(np.uint8))
     match_kp1 = []
     match_kp2 = []
@@ -161,7 +164,7 @@ def essential_matrix(K1, K2, F):
 
 def four_possible_solution_of_essential_matrix(E):
     U, S, V = np.linalg.svd(E)
-    if np.linalg.det(U@V) < 0 :
+    if np.linalg.det(U@V):
         V = -V
     W = np.array([[0,-1, 0],
                   [1, 0, 0], 
@@ -225,32 +228,36 @@ def use_matlab_for_final_results(pred_pts, keypoints, P, img_name, output_dir):
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--output_dir', type=str, default='results')
-    parser.add_argument('--image_set', type=str, default='mesona', help='mesona, status, ours')
+    parser.add_argument('--image_set', type=str, default='mesona', help='mesona, statue, nerv')
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
     if args.image_set == 'mesona':
         img1_name = 'Mesona1.JPG'
         img2_name = 'Mesona2.JPG'
-
         K1 = np.array([[1.4219, 0.0005, 0.5092],
-                    [     0, 1.4219,      0],
-                    [     0,      0, 0.0010]])
+                      [     0, 1.4219,      0],
+                      [     0,      0, 0.0010]])
         K2 = np.array([[1.4219, 0.0005, 0.5092],
-                    [     0, 1.4219, 0.3802],
-                    [     0,      0, 0.0010]])
+                      [     0, 1.4219, 0.3802],
+                      [     0,      0, 0.0010]])
     elif args.image_set == 'statue':
         img1_name = './Statue1.bmp'
         img2_name = './Statue2.bmp'
-
         K1 = np.array([[5426.566895,    0.678017, 330.096680],
                        [          0, 5423.133301, 648.950012],
                        [          0,           0,          1]])
         K2 = np.array([[5426.566895,    0.678017, 387.430023],
                        [          0, 5423.133301, 620.616699],
                        [          0,           0,          1]])
-    elif args.image_set == 'ours':
-        raise NotImplementedError
+    elif args.image_set == 'nerv':
+        img1_name = './BOX2_0.jpg'
+        img2_name = './BOX2_1.jpg'
+        K1 = np.load('intrinsic.npy')
+        K2 = np.load('intrinsic.npy')
+        # [[1.52327854e+03 0.00000000e+00 7.55865517e+02]
+        #  [0.00000000e+00 1.52097830e+03 9.90642289e+02]
+        #  [0.00000000e+00 0.00000000e+00 1.00000000e+00]]
     else:
         print('Unknown image set')
         raise NotImplementedError
@@ -266,13 +273,18 @@ if __name__ == '__main__':
     print('SIFT....')
     kp1, des1 = sift(img1)
     kp2, des2 = sift(img2)
+    img1_kp = cv2.drawKeypoints(img1, kp1, None)
+    img2_kp = cv2.drawKeypoints(img2, kp2, None)
+    plt.imsave(os.path.join(args.output_dir, 'img1_kp.png'), img1_kp)
+    plt.imsave(os.path.join(args.output_dir, 'img2_kp.png'), img2_kp)
 
     print('Feature matching....')
-    match_kp1, match_kp2 = match_feature(img1, kp1, des1, img2, kp2, des2, 0.6, '.')
+    match_kp1, match_kp2 = match_feature(img1, kp1, des1, img2, kp2, des2, 0.5, args.output_dir)
     print('match_kp1', match_kp1.shape)
+
     print('match_kp2', match_kp2.shape)
     print('RANSAC....')
-    F, best_match_kp1, best_match_kp2 = RANSAC(match_kp1, match_kp2, conf=0.95)
+    F, best_match_kp1, best_match_kp2 = RANSAC(match_kp1, match_kp2, conf=0.9, quiet=False)
 
     print('Draw epipolar lines on image 1....')
     lines_on_img1 = compute_epipolar_line(F.T, best_match_kp2)
@@ -318,3 +330,5 @@ if __name__ == '__main__':
     fig = plot_pred_points(most_apprx_pred_pt)
     fig.savefig(os.path.join(args.output_dir, 'pred_points.png'), dpi=300)
     use_matlab_for_final_results(most_apprx_pred_pt, best_match_kp1, P1, img1_name, args.output_dir)
+    os.rename('model1.mtl', os.path.join(args.output_dir, 'model1.mtl'))
+    os.rename('model1.obj', os.path.join(args.output_dir, 'model1.obj'))
