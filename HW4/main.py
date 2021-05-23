@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 from numpy.linalg import norm, svd
+from argparse import ArgumentParser
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def sift(img):
@@ -66,15 +68,15 @@ def run_8_point(match_kp1, match_kp2):
     A = []
     for i in range(8):
         A.append([
-            norm_kp2[i,0]*norm_kp1[i,0],
-            norm_kp2[i,0]*norm_kp1[i,1],
-            norm_kp2[i,0]*norm_kp1[i,2],
-            norm_kp2[i,1]*norm_kp1[i,0],
-            norm_kp2[i,1]*norm_kp1[i,1],
-            norm_kp2[i,1]*norm_kp1[i,2],
-            norm_kp2[i,2]*norm_kp1[i,0],
-            norm_kp2[i,2]*norm_kp1[i,1],
-            norm_kp2[i,2]*norm_kp1[i,2]
+            norm_kp2[i,0] * norm_kp1[i,0],
+            norm_kp2[i,0] * norm_kp1[i,1],
+            norm_kp2[i,0] * norm_kp1[i,2],
+            norm_kp2[i,1] * norm_kp1[i,0],
+            norm_kp2[i,1] * norm_kp1[i,1],
+            norm_kp2[i,1] * norm_kp1[i,2],
+            norm_kp2[i,2] * norm_kp1[i,0],
+            norm_kp2[i,2] * norm_kp1[i,1],
+            norm_kp2[i,2] * norm_kp1[i,2]
         ])
     A = np.array(A)
 
@@ -102,7 +104,7 @@ def sampson_distance(match_kp1, match_kp2, F):
     return err
 
 
-def RANSAC(match_kp1, match_kp2, thres=1, max_iter=10000, conf=0.9):
+def RANSAC(match_kp1, match_kp2, thres=1, max_iter=10000, conf=0.9, quiet=True):
     num_match = match_kp1.shape[0]
     best_F = None
     best_kp1 = None
@@ -119,7 +121,8 @@ def RANSAC(match_kp1, match_kp2, thres=1, max_iter=10000, conf=0.9):
         inlier_idx = err[:,0] < thres
         num_inlier = inlier_idx.astype(np.int32).sum()
         if num_inlier>=max_num_inlier and num_inlier>=num_match*conf:
-            print(f'Iter: {i:5d}, {num_inlier} inliers ({num_match}x{conf}={int(num_match*conf)})')
+            if not quiet:
+                print(f'Iter: {i:5d}, {num_inlier} inliers ({num_match}x{conf}={int(num_match*conf)})')
             best_F = np.array(F)
             best_kp1 = match_kp1[inlier_idx]
             best_kp2 = match_kp2[inlier_idx]
@@ -147,94 +150,115 @@ def drawlines(img1, pts1, img2, pts2, lines):
         new_img2 = cv2.circle(new_img2, tuple(pt2[0:2]), 5, color, -1)
     return new_img1, new_img2
 
-def essential_matrix(pts1, pts2, F):
-    E = pts1.T @ F @ pts2
+
+def essential_matrix(K1, K2, F):
+    E = K1.T @ F @ K2
     U,S,V = np.linalg.svd(E)
-    m = (S[0]+S[1])/2
-    E = U @ np.diag((m,m,0)) @ V
+    m = (S[0]+S[1]) / 2
+    E = U @ np.diag((m, m, 0)) @ V
     return E
+
 
 def four_possible_solution_of_essential_matrix(E):
     U, S, V = np.linalg.svd(E)
-    if np.linalg.det(U @ V) < 0 :
+    if np.linalg.det(U@V) < 0 :
         V = -V
     W = np.array([[0,-1, 0],
                   [1, 0, 0], 
                   [0, 0, 1]])
-    R = U @ W @ V.T
-    t = U[:, 2:]
-    P2_0 = np.hstack((R,t))
-    P2_1 = np.hstack((R,-t))
-    R = U @ W.T @ V.T
-    P2_2 = np.hstack((R,t))
-    P2_3 = np.hstack((R,-t))
+    R = U @ W @ V
+    t = U[:,2:]
+    P2_0 = np.hstack((R, t))
+    P2_1 = np.hstack((R, -t))
+    R = U @ W.T @ V
+    P2_2 = np.hstack((R, t))
+    P2_3 = np.hstack((R, -t))
 
     return [P2_0, P2_1, P2_2, P2_3]
 
+
 def triangulation(x1, x2, P1, P2):
     pred_pt = np.ones((x1.shape[0], 4))
-    C = P2[:,:3].T @ P2[:, 3:]
+    C = P2[:,:3].T @ P2[:,3:]
     infront_num = 0
     for i in range(x1.shape[0]):
         A = np.asarray([
-            (x1[i, 0] * P1[2, :].T - P1[0, :].T),
-            (x1[i, 1] * P1[2, :].T - P1[1, :].T),
-            (x2[i, 0] * P2[2, :].T - P2[0, :].T),
-            (x2[i, 1] * P2[2, :].T - P2[1, :].T)
+            (x1[i,0] * P1[2,:].T - P1[0,:].T),
+            (x1[i,1] * P1[2,:].T - P1[1,:].T),
+            (x2[i,0] * P2[2,:].T - P2[0,:].T),
+            (x2[i,1] * P2[2,:].T - P2[1,:].T)
         ])
         U, S, V = np.linalg.svd(A)
-        pred_pt_i = V[-1]/V[-1][3]
-        pred_pt[i, :] = pred_pt_i
+        pred_pt_i = V[-1] / V[-1,3]
+        pred_pt[i,:] = pred_pt_i
         if np.dot((pred_pt_i[:3]-C.reshape(-1)), P2[2,:3]) > 0:
             infront_num += 1
     return pred_pt, infront_num
+
 
 def plot_pred_points(pred_pts):
     plt.clf()
     fig = plt.figure()
     ax = Axes3D(fig)
-    for i in range(pred_pts.shape[0]):
-        ax.scatter(pred_pts[i, 0], pred_pts[i, 1], pred_pts[i, 2])
+    # for i in range(pred_pts.shape[0]):
+    #     ax.scatter(pred_pts[i,0], pred_pts[i,1], pred_pts[i,2], c='r', marker='o')
+    ax.scatter(pred_pts[:,0], pred_pts[:,1], pred_pts[:,2], c='r', marker='o')
     ax.set_xlabel('x axis')
     ax.set_ylabel('y axis')
     ax.set_zlabel('z axis')
-    plt.show()
+    return fig
 
-def use_matlab_for_final_results(pred_pts, keypoints, P, img_name):
+
+def use_matlab_for_final_results(pred_pts, keypoints, P, img_name, output_dir):
     import matlab.engine
     eng = matlab.engine.start_matlab()
     eng.obj_main(
-        matlab.double(pred_pts[:,:3].tolist()), 
-        matlab.double(keypoints.tolist()), 
-        matlab.double(P.tolist()), 
-        './{}'.format(img_name), 
-        1.0, 
+        matlab.double(pred_pts[:,:3].tolist()),
+        matlab.double(keypoints.tolist()),
+        matlab.double(P.tolist()),
+        './{}'.format(img_name),
+        1.0,
+        output_dir,
         nargout=0)
 
+
 if __name__ == '__main__':
-    img1_name = 'Mesona1.JPG'
-    img2_name = 'Mesona2.JPG'
+    parser = ArgumentParser()
+    parser.add_argument('--output_dir', type=str, default='results')
+    parser.add_argument('--image_set', type=str, default='mesona', help='mesona, status, ours')
+    args = parser.parse_args()
+
+    os.makedirs(args.output_dir, exist_ok=True)
+    if args.image_set == 'mesona':
+        img1_name = 'Mesona1.JPG'
+        img2_name = 'Mesona2.JPG'
+
+        K1 = np.array([[1.4219, 0.0005, 0.5092],
+                    [     0, 1.4219,      0],
+                    [     0,      0, 0.0010]])
+        K2 = np.array([[1.4219, 0.0005, 0.5092],
+                    [     0, 1.4219, 0.3802],
+                    [     0,      0, 0.0010]])
+    elif args.image_set == 'statue':
+        img1_name = './Statue1.bmp'
+        img2_name = './Statue2.bmp'
+
+        K1 = np.array([[5426.566895,    0.678017, 330.096680],
+                       [          0, 5423.133301, 648.950012],
+                       [          0,           0,          1]])
+        K2 = np.array([[5426.566895,    0.678017, 387.430023],
+                       [          0, 5423.133301, 620.616699],
+                       [          0,           0,          1]])
+    elif args.image_set == 'ours':
+        raise NotImplementedError
+    else:
+        print('Unknown image set')
+        raise NotImplementedError
+
     img1 = cv2.imread(f'./{img1_name}')
     img2 = cv2.imread(f'./{img2_name}')
-
-    K1 = np.array([
-        [1.4219, 0.0005, 0.5092],
-        [0, 1.4219, 0],
-        [0, 0, 0.0010]])*1000
-    K2 = np.array([
-        [1.4219, 0.0005, 0.5092],
-        [0, 1.4219, 0.3802],
-        [0, 0, 0.0010]])*1000
-
-    # img1 = cv2.imread('./Statue1.bmp')
-    # img2 = cv2.imread('./Statue2.bmp')
-
-    # K1 = np.array([[5426.566895, 0.678017, 330.09668],
-    #                [0, 5423.133301, 648.950012],
-    #                [0, 0, 1]])
-    # K2 = np.array([[5426.566895, 0.678017, 387.430023],
-    #                [0, 5423.133301, 620.616699],
-    #                [0, 0, 1]])
+    print(f'Image 1: {img1_name}')
+    print(f'Image 2: {img2_name}')
 
     img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
     img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
@@ -244,11 +268,11 @@ if __name__ == '__main__':
     kp2, des2 = sift(img2)
 
     print('Feature matching....')
-    match_kp1, match_kp2 = match_feature(img1, kp1, des1, img2, kp2, des2, 0.5, '.')
+    match_kp1, match_kp2 = match_feature(img1, kp1, des1, img2, kp2, des2, 0.6, '.')
     print('match_kp1', match_kp1.shape)
     print('match_kp2', match_kp2.shape)
     print('RANSAC....')
-    F, best_match_kp1, best_match_kp2 = RANSAC(match_kp1, match_kp2)
+    F, best_match_kp1, best_match_kp2 = RANSAC(match_kp1, match_kp2, conf=0.95)
 
     print('Draw epipolar lines on image 1....')
     lines_on_img1 = compute_epipolar_line(F.T, best_match_kp2)
@@ -260,7 +284,7 @@ if __name__ == '__main__':
     axs[1].imshow(new_img2)
     axs[1].set_title('Interest points on image 2')
     axs[1].axis('off')
-    plt.savefig('lines_on_img1.png', dpi=300)
+    plt.savefig(os.path.join(args.output_dir, 'epipolar-lines_on_img1.png'), dpi=300)
 
     print('Draw epipolar lines on image 2....')
     lines_on_img2 = compute_epipolar_line(F, best_match_kp1)
@@ -272,24 +296,25 @@ if __name__ == '__main__':
     axs[1].imshow(new_img2)
     axs[1].set_title('Epipolar lines on image 2')
     axs[1].axis('off')
-    plt.savefig('lines_on_img2.png', dpi=300)
+    plt.savefig(os.path.join(args.output_dir, 'epipolar-lines_on_img2.png'), dpi=300)
     
-    print('Get 4 possible solutions of essential matrix from fundamental matrix')
+    print('Get 4 possible solutions of essential matrix from fundamental matrix....')
     E = essential_matrix(K1, K2, F)
     P2s = four_possible_solution_of_essential_matrix(E)
 
-    print('find out the most appropriate solution of essential matrix')
-    P1 = K1@np.eye(3,4)
+    print('Find out the most appropriate solution of essential matrix....')
+    P1 = K1 @ np.eye(3, 4)
     largest_infornt_num = 0
     for P2 in P2s:
-        P2 = K2@P2
+        P2 = K2 @ P2
         pred_pt, infront_num = triangulation(best_match_kp1, best_match_kp2, P1, P2)
-        C = P2[:,:3] @ P2[:, 3].T
-        if infront_num>largest_infornt_num:
+        # C = P2[:,:3] @ P2[:,3].T
+        if infront_num > largest_infornt_num:
             largest_infornt_num = infront_num
             most_apprx_P2 = P2
             most_apprx_pred_pt = pred_pt
 
-    print('apply triangulation to get 3D points')
-    plot_pred_points(most_apprx_pred_pt)
-    use_matlab_for_final_results(most_apprx_pred_pt, best_match_kp1, P1, img1_name)
+    print('Apply triangulation to get 3D points....')
+    fig = plot_pred_points(most_apprx_pred_pt)
+    fig.savefig(os.path.join(args.output_dir, 'pred_points.png'), dpi=300)
+    use_matlab_for_final_results(most_apprx_pred_pt, best_match_kp1, P1, img1_name, args.output_dir)
