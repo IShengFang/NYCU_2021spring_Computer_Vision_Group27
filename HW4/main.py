@@ -163,7 +163,7 @@ def essential_matrix(K1, K2, F):
 
 def four_possible_solution_of_second_camera_matrix(E):
     U, S, V = np.linalg.svd(E)
-    if np.linalg.det(U@V):
+    if np.linalg.det(U@V) < 0:
         V = -V
     W = np.array([[0,-1, 0],
                   [1, 0, 0], 
@@ -251,7 +251,7 @@ if __name__ == '__main__':
         K2 = np.array([[5426.566895,    0.678017, 387.430023],
                        [          0, 5423.133301, 620.616699],
                        [          0,           0,          1]])
-    elif args.image_set == 'nerv':
+    elif args.image_set == 'ours':
         img1_name = './BOX_0.jpg'
         img2_name = './BOX_1.jpg'
         K1 = np.load('intrinsic.npy')
