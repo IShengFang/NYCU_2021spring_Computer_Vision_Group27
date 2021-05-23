@@ -1,0 +1,6 @@
+# MTL file
+newmtl Texture
+Ka 1 1 1
+Kd 1 1 1
+Ks 1 1 1
+map_Kd ././Statue1.bmp

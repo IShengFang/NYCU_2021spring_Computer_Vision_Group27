@@ -227,7 +227,7 @@ def use_matlab_for_final_results(pred_pts, keypoints, P, img_name, output_dir):
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--output_dir', type=str, default='results')
-    parser.add_argument('--image_set', type=str, default='mesona', help='mesona, statue, nerv')
+    parser.add_argument('--image_set', type=str, default='mesona', help='mesona, statue, ours')
     parser.add_argument('--match_ratio', type=float, default=0.5)
     parser.add_argument('--ransac_conf', type=float, default=0.9)
     args = parser.parse_args()
@@ -252,8 +252,8 @@ if __name__ == '__main__':
                        [          0, 5423.133301, 620.616699],
                        [          0,           0,          1]])
     elif args.image_set == 'nerv':
-        img1_name = './BOX2_0.jpg'
-        img2_name = './BOX2_1.jpg'
+        img1_name = './BOX_0.jpg'
+        img2_name = './BOX_1.jpg'
         K1 = np.load('intrinsic.npy')
         K2 = np.load('intrinsic.npy')
         # [[1.52327854e+03 0.00000000e+00 7.55865517e+02]
