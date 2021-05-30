@@ -29,6 +29,5 @@ if __name__ == '__main__':
         x_test, y_test = next(iter(dataset))
         x_test = x_test.view(x_test.size(0), -1)
         model = kNN.kNN(args.k, x_train, y_train, args.norm)
-        _, indices = model(x_test)
         y_pred, acc = model.classification(x_test, y_test)
         print(f'test acc:{acc}')
