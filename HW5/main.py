@@ -29,17 +29,17 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.cls_mode == 'knn':
-        tf = [
-            transforms.Grayscale(),
-            transforms.Resize(args.img_size),
-            transforms.CenterCrop(args.img_size),
-            transforms.ToTensor()
-        ]
         # tf = [
         #     transforms.Grayscale(),
-        #     transforms.Resize((args.img_size, args.img_size)),
+        #     transforms.Resize(args.img_size),
+        #     transforms.CenterCrop(args.img_size),
         #     transforms.ToTensor()
         # ]
+        tf = [
+            transforms.Grayscale(),
+            transforms.Resize((args.img_size, args.img_size)),
+            transforms.ToTensor()
+        ]
         tf = transforms.Compose(tf)
 
         dataset = ImageFolder('./data/train/', tf)

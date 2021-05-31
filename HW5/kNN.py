@@ -4,6 +4,15 @@ from torch import nn
 import torch.nn.functional as F
 
 
+def cosine_similarity(x_test, x_train):
+    dot = x_test @ x_train.T
+    x_test_norm = torch.norm(x_test, dim=1)
+    x_train_norm = torch.norm(x_train, dim=1)
+    dot = dot / x_test_norm[:,None]
+    dot = dot / x_train_norm
+    return -dot
+
+
 class kNN(nn.Module):
     def __init__(self, k, x_train, y_train, norm=2, num_classes=15):
         super().__init__()
@@ -19,7 +28,8 @@ class kNN(nn.Module):
         return values, indices
 
     def classification(self, x_test, y_test):
-        dist = torch.cdist(x_test, self.x_train, p=self.norm)
+        # dist = torch.cdist(x_test, self.x_train, p=self.norm)
+        dist = cosine_similarity(x_test, self.x_train)
         values, indices = dist.topk(self.k)
         y_pred = self.y_train[indices].reshape(x_test.size(0), -1)
         count, y_pred = F.one_hot(y_pred, self.num_classes).sum(1).max(1)
