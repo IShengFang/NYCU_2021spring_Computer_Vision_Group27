@@ -22,7 +22,6 @@ class kNN(nn.Module):
         dist = torch.cdist(x_test, self.x_train, p=self.norm)
         values, indices = dist.topk(self.k)
         y_pred = self.y_train[indices].reshape(x_test.size(0), -1)
-        y_pred = y_pred.squeeze()
-        # count, y_pred = F.one_hot(y_pred, self.num_classes).sum(1).max(1)
+        count, y_pred = F.one_hot(y_pred, self.num_classes).sum(1).max(1)
         acc = (y_test==y_pred).float().mean()
         return y_pred, acc
