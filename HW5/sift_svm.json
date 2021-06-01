@@ -1,6 +1,5 @@
 [
   {
-<<<<<<< HEAD
     "time": 1622548410,
     "repr_mode": "sift",
     "cls_mode": "svm",
@@ -255,47 +254,5 @@
     "num_clusters": 600,
     "c": 10000.0,
     "acc": 0.64
-=======
-    "time": 1622541448,
-    "repr_mode": "sift",
-    "cls_mode": "svm",
-    "num_clusters": 150,
-    "acc": 0.37333333333333335
-  },
-  {
-    "time": 1622541504,
-    "repr_mode": "sift",
-    "cls_mode": "svm",
-    "num_clusters": 300,
-    "acc": 0.38666666666666666
-  },
-  {
-    "time": 1622541574,
-    "repr_mode": "sift",
-    "cls_mode": "svm",
-    "num_clusters": 450,
-    "acc": 0.37333333333333335
-  },
-  {
-    "time": 1622541657,
-    "repr_mode": "sift",
-    "cls_mode": "svm",
-    "num_clusters": 600,
-    "acc": 0.35333333333333333
-  },
-  {
-    "time": 1622541759,
-    "repr_mode": "sift",
-    "cls_mode": "svm",
-    "num_clusters": 750,
-    "acc": 0.36666666666666664
-  },
-  {
-    "time": 1622541873,
-    "repr_mode": "sift",
-    "cls_mode": "svm",
-    "num_clusters": 900,
-    "acc": 0.37333333333333335
->>>>>>> 3f70285dc6be1c8a7802abc0f651433816131b28
   }
 ]

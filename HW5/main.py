@@ -310,11 +310,7 @@ if __name__ == '__main__':
         print('Use SVM for modeling')
         model = svm_train(
                     y_train.numpy(), x_train.numpy(),
-<<<<<<< HEAD
                     f'-s 0 -t 0 -c {args.c} -q')
-=======
-                    f'-s 0 -t 0 -q')
->>>>>>> 3f70285dc6be1c8a7802abc0f651433816131b28
         res = svm_predict(y_test.numpy(), x_test.numpy(), model, '-q')
         acc = res[1][0] / 100
         print(f'test acc: {acc:.4f}')
