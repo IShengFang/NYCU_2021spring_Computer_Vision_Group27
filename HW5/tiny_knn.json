@@ -1,0 +1,178 @@
+[
+  {
+    "time": 1622519190,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": true,
+    "k": 1,
+    "norm": 2,
+    "acc": 0.2133333384990692
+  },
+  {
+    "time": 1622519193,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": false,
+    "k": 1,
+    "norm": 2,
+    "acc": 0.14000000059604645
+  },
+  {
+    "time": 1622519197,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": true,
+    "k": 3,
+    "norm": 2,
+    "acc": 0.2199999988079071
+  },
+  {
+    "time": 1622519200,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": false,
+    "k": 3,
+    "norm": 2,
+    "acc": 0.18666666746139526
+  },
+  {
+    "time": 1622519203,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": true,
+    "k": 5,
+    "norm": 2,
+    "acc": 0.18000000715255737
+  },
+  {
+    "time": 1622519206,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": false,
+    "k": 5,
+    "norm": 2,
+    "acc": 0.1733333319425583
+  },
+  {
+    "time": 1622519209,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": true,
+    "k": 7,
+    "norm": 2,
+    "acc": 0.2133333384990692
+  },
+  {
+    "time": 1622519212,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": false,
+    "k": 7,
+    "norm": 2,
+    "acc": 0.18666666746139526
+  },
+  {
+    "time": 1622519216,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": true,
+    "k": 9,
+    "norm": 2,
+    "acc": 0.18000000715255737
+  },
+  {
+    "time": 1622519219,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": false,
+    "k": 9,
+    "norm": 2,
+    "acc": 0.1599999964237213
+  },
+  {
+    "time": 1622519222,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": true,
+    "k": 11,
+    "norm": 2,
+    "acc": 0.1666666716337204
+  },
+  {
+    "time": 1622519225,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": false,
+    "k": 11,
+    "norm": 2,
+    "acc": 0.1666666716337204
+  },
+  {
+    "time": 1622519228,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": true,
+    "k": 13,
+    "norm": 2,
+    "acc": 0.1733333319425583
+  },
+  {
+    "time": 1622519231,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": false,
+    "k": 13,
+    "norm": 2,
+    "acc": 0.1599999964237213
+  },
+  {
+    "time": 1622519234,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": true,
+    "k": 15,
+    "norm": 2,
+    "acc": 0.19333332777023315
+  },
+  {
+    "time": 1622519238,
+    "cls_mode": "knn",
+    "repr_mode": "tiny",
+    "data_root": "./data",
+    "img_size": 16,
+    "normalize": false,
+    "k": 15,
+    "norm": 2,
+    "acc": 0.1733333319425583
+  }
+]

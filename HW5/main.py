@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from datetime import time
 import os
 import cv2
 import json
@@ -7,9 +6,9 @@ import time
 import faiss
 import numpy as np
 from tqdm import tqdm
-from sklearn.svm import SVC
 import matplotlib.pyplot as plt
 from argparse import ArgumentParser
+from libsvm.svmutil import svm_train, svm_predict
 
 import torch
 from torch import nn
@@ -17,14 +16,18 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from torchvision.datasets import ImageFolder
-
-from tqdm import tqdm
+from torch.utils.tensorboard import SummaryWriter
 
 import kNN, model
 
 
 def sift(dataset):
-    sift_descriptor = cv2.SIFT_create()
+    sift_descriptor = cv2.SIFT_create(
+                            nfeatures=0,
+                            nOctaveLayers=8,
+                            contrastThreshold=0.01,
+                            edgeThreshold=80,
+                            sigma=0.6)
     des_per_x = []
     y = []
     for data in tqdm(dataset, ncols=80):
@@ -45,20 +48,6 @@ def quantize(model, des_per_image, num_clusters, normalize=True):
             feature[i,u] /= counts.sum()
     return torch.tensor(feature)
 
-def check_and_make_dir(path):
-    print('check', path)
-    dirs = path.split('/')
-    if path[0] == '/':
-        path = '/'
-    else:
-        path = ''
-
-    for _dir in dirs:
-        path = os.path.join(path, _dir)
-        print('check', path, os.path.isdir(path))
-        if not os.path.isdir(path):
-            print('mkdir', path)
-            os.mkdir(path)
 
 def generate_nn_exp_name(args):
     if args.pretrained:
@@ -73,6 +62,7 @@ def generate_nn_exp_name(args):
         args.batch_size)
 
     return args.nn_exp_name
+
 
 def train(net, writer, train_loader, valid_loader,
           optimizer, criterion, epochs, device, cpt_num, args):
@@ -118,6 +108,7 @@ def train(net, writer, train_loader, valid_loader,
         print('saving model cpt @ {}'.format(save_path))
         torch.save(net.state_dict(), save_path)
 
+
 def evaluate(net, valid_loader, train_loader, criterion, logger, device, step):
     net.eval()
     y_true = []
@@ -137,7 +128,7 @@ def evaluate(net, valid_loader, train_loader, criterion, logger, device, step):
             val_loss += loss.item()
 
         _, pred = output.data.max(1)
-        correct += (labels == pred).sum().item()
+        correct += (labels==pred).sum().item()
         y_true += labels.data.cpu()
         y_pred += pred.data.cpu()
         batch_idx += 1
@@ -161,11 +152,14 @@ def evaluate(net, valid_loader, train_loader, criterion, logger, device, step):
     logger.add_scalar('val/total_acc', val_acc, step)
     logger.add_scalar('train/total_acc', train_acc, step)
 
+
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--cls_mode', type=str, default='knn', help='knn, svm, nn')
     parser.add_argument('--repr_mode', type=str, default='tiny', help='tiny, sift, nn')
     parser.add_argument('--data_root', type=str, default='./data')
+
+    # used to save results of kNN and SVM
     parser.add_argument('--log_fn', type=str, default='log.json')
     
     # for feature (tiny)
@@ -212,40 +206,43 @@ if __name__ == '__main__':
     if args.generate_exp_name:
         args.nn_exp_name = generate_nn_exp_name(args)
 
-
     log_fn = args.log_fn
     log = json.load(open(log_fn, 'r')) if os.path.exists(log_fn) else []
-    json_args = {'time': int(time.time()), **vars(args)}
-    json_args.pop('log_fn')
+    json_args = {
+        'time': int(time.time()),
+        'repr_mode': args.repr_mode,
+        'cls_mode': args.cls_mode
+    }
     train_dir = os.path.join(args.data_root, 'train')
     test_dir = os.path.join(args.data_root, 'test')
 
     # feature
     if args.repr_mode == 'tiny':
-        tf = [
-            transforms.Grayscale(),
-            transforms.Resize((args.img_size, args.img_size)),
-            transforms.ToTensor(),
-        ]
+        print('Use tiny representation')
+        tf = [transforms.Grayscale(),
+              transforms.Resize((args.img_size, args.img_size)),
+              transforms.ToTensor()]
         tf = transforms.Compose(tf)
 
         dataset = ImageFolder(train_dir, tf)
         dataset = DataLoader(dataset, batch_size=len(dataset))
         x_train, y_train = next(iter(dataset))
         x_train = x_train.view(x_train.size(0), -1)
-        if args.normalize:
-            x_train = (x_train-x_train.mean(1)[:,None]) / (x_train.std(1)[:,None]+1e-6)
 
         dataset = ImageFolder(test_dir, tf)
         dataset = DataLoader(dataset, batch_size=len(dataset))
         x_test, y_test = next(iter(dataset))
         x_test = x_test.view(x_test.size(0), -1)
+
         if args.normalize:
+            x_train = (x_train-x_train.mean(1)[:,None]) / (x_train.std(1)[:,None]+1e-6)
             x_test = (x_test-x_test.mean(1)[:,None]) / (x_test.std(1)[:,None]+1e-6)
 
-        json_args.pop('num_clusters')
+        json_args['img_size'] = args.img_size
+        json_args['normalize'] = args.normalize
 
     elif args.repr_mode == 'sift':
+        print('Use SIFT for representation')
         tf = [transforms.Grayscale()]
         tf = transforms.Compose(tf)
 
@@ -259,68 +256,73 @@ if __name__ == '__main__':
 
         print('Find centroids with K-means....')
         des_vstack = np.vstack(des_per_x_train)
-        model = faiss.Kmeans(
+        km_model = faiss.Kmeans(
                     d=des_vstack.shape[1],
                     k=args.num_clusters,
-                    gpu=True, niter=300, nredo=10)
-        model.train(des_vstack)
+                    gpu=True, niter=300, nredo=10, verbose=True)
+        km_model.train(des_vstack)
 
         print('Vecter quantization....')
-        x_train = quantize(model, des_per_x_train, args.num_clusters)
-        x_test = quantize(model, des_per_x_test, args.num_clusters)
+        x_train = quantize(km_model, des_per_x_train, args.num_clusters)
+        x_test = quantize(km_model, des_per_x_test, args.num_clusters)
         y_train = torch.tensor(y_train).type(torch.int64)
         y_test = torch.tensor(y_test).type(torch.int64)
 
-        json_args.pop('img_size')
-        json_args.pop('normalize')
+        json_args['num_clusters'] = args.num_clusters
 
     elif args.repr_mode == 'nn':
         print('Use CNN for representation')
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         args.log_dir = os.path.join(args.log_dir, args.nn_exp_name)
-        check_and_make_dir(args.log_dir)
+        os.makedirs(args.log_dir, exist_ok=True)
         args.cpt_dir = os.path.join(args.cpt_dir, args.nn_exp_name)
-        check_and_make_dir(args.cpt_dir)
+        os.makedirs(args.cpt_dir, exist_ok=True)
         tf = [transforms.RandomHorizontalFlip(p=0.5), 
               transforms.RandomResizedCrop(args.img_size),
               transforms.ToTensor()]
-
         tf = transforms.Compose(tf)
 
         train_dataset = ImageFolder(train_dir, tf)
         train_loader = DataLoader(train_dataset, batch_size=args.batch_size, 
-                                   shuffle=True, num_workers=args.n_threads)
+                                  shuffle=True, num_workers=args.n_threads)
 
-        tf = [transforms.Resize((args.img_size, args.img_size)), transforms.ToTensor()]
+        tf = [transforms.Resize((args.img_size, args.img_size)),
+              transforms.ToTensor()]
         tf = transforms.Compose(tf)
 
         test_dataset = ImageFolder(test_dir, tf)
         test_loader = DataLoader(test_dataset, batch_size=args.batch_size, 
                                   num_workers=args.n_threads)
+
     else:
         raise NotImplementedError
 
     # model
     if args.cls_mode == 'knn':
+        print('Use kNN for modeling')
         model = kNN.kNN(args.k, x_train, y_train, args.norm)
         y_pred, acc = model.predict(x_test, y_test)
         print(f'test acc: {acc:.4f}')
         json_args['acc'] = acc.item()
-        json_args.pop('c')
+        log.append(json_args)
+        json.dump(log, open(log_fn, 'w'), indent=2)
 
     elif args.cls_mode == 'svm':
-        svc = SVC(C=args.c)
-        svc.fit(x_train, y_train)
-        y_pred = svc.predict(x_test)
-        acc = (torch.tensor(y_pred)==y_test).sum() / y_test.size(0)
+        print('Use SVM for modeling')
+        n_feature = x_train.size(1)
+        x_var = x_train.var().item()
+        model = svm_train(
+                    y_train.numpy(), x_train.numpy(),
+                    f'-s 0 -t 2 -c {args.c} -g {1/(n_feature*x_var)} -q')
+        res = svm_predict(y_test.numpy(), x_test.numpy(), model, '-q')
+        acc = res[1][0] / 100
         print(f'test acc: {acc:.4f}')
-        json_args['acc'] = acc.item()
-        json_args.pop('k')
-        json_args.pop('norm')
+        json_args['acc'] = acc
+        log.append(json_args)
+        json.dump(log, open(log_fn, 'w'), indent=2)
 
     elif args.cls_mode == 'nn':
         print('Use CNN for modeling')
-        from torch.utils.tensorboard import SummaryWriter
         writer = SummaryWriter(args.log_dir)
         net = model.CNN_Model(args.nn_model_name, args.pretrained)
         criterion = nn.CrossEntropyLoss()
@@ -336,7 +338,3 @@ if __name__ == '__main__':
 
     else:
         raise NotImplementedError
-
-    # print(json_args)
-    log.append(json_args)
-    json.dump(log, open(log_fn, 'w'), indent=2)

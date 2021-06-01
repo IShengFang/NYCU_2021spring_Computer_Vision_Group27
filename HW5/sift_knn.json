@@ -1,0 +1,322 @@
+[
+  {
+    "time": 1622519241,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 150,
+    "k": 1,
+    "norm": 2,
+    "acc": 0.5133333206176758
+  },
+  {
+    "time": 1622519297,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 150,
+    "k": 3,
+    "norm": 2,
+    "acc": 0.54666668176651
+  },
+  {
+    "time": 1622519353,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 150,
+    "k": 5,
+    "norm": 2,
+    "acc": 0.5266666412353516
+  },
+  {
+    "time": 1622519420,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 150,
+    "k": 7,
+    "norm": 2,
+    "acc": 0.5666666626930237
+  },
+  {
+    "time": 1622519476,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 150,
+    "k": 9,
+    "norm": 2,
+    "acc": 0.5799999833106995
+  },
+  {
+    "time": 1622519532,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 150,
+    "k": 11,
+    "norm": 2,
+    "acc": 0.5600000023841858
+  },
+  {
+    "time": 1622519588,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 150,
+    "k": 13,
+    "norm": 2,
+    "acc": 0.5333333611488342
+  },
+  {
+    "time": 1622519644,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 150,
+    "k": 15,
+    "norm": 2,
+    "acc": 0.5133333206176758
+  },
+  {
+    "time": 1622519700,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 300,
+    "k": 1,
+    "norm": 2,
+    "acc": 0.5
+  },
+  {
+    "time": 1622519769,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 300,
+    "k": 3,
+    "norm": 2,
+    "acc": 0.47333332896232605
+  },
+  {
+    "time": 1622519837,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 300,
+    "k": 5,
+    "norm": 2,
+    "acc": 0.5933333039283752
+  },
+  {
+    "time": 1622519906,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 300,
+    "k": 7,
+    "norm": 2,
+    "acc": 0.5933333039283752
+  },
+  {
+    "time": 1622519974,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 300,
+    "k": 9,
+    "norm": 2,
+    "acc": 0.5733333230018616
+  },
+  {
+    "time": 1622520043,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 300,
+    "k": 11,
+    "norm": 2,
+    "acc": 0.5799999833106995
+  },
+  {
+    "time": 1622520111,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 300,
+    "k": 13,
+    "norm": 2,
+    "acc": 0.5600000023841858
+  },
+  {
+    "time": 1622520180,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 300,
+    "k": 15,
+    "norm": 2,
+    "acc": 0.5400000214576721
+  },
+  {
+    "time": 1622520249,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 450,
+    "k": 1,
+    "norm": 2,
+    "acc": 0.46000000834465027
+  },
+  {
+    "time": 1622520331,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 450,
+    "k": 3,
+    "norm": 2,
+    "acc": 0.5133333206176758
+  },
+  {
+    "time": 1622520412,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 450,
+    "k": 5,
+    "norm": 2,
+    "acc": 0.5266666412353516
+  },
+  {
+    "time": 1622520492,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 450,
+    "k": 7,
+    "norm": 2,
+    "acc": 0.5933333039283752
+  },
+  {
+    "time": 1622520573,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 450,
+    "k": 9,
+    "norm": 2,
+    "acc": 0.5799999833106995
+  },
+  {
+    "time": 1622520655,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 450,
+    "k": 11,
+    "norm": 2,
+    "acc": 0.54666668176651
+  },
+  {
+    "time": 1622520736,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 450,
+    "k": 13,
+    "norm": 2,
+    "acc": 0.5799999833106995
+  },
+  {
+    "time": 1622520817,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 450,
+    "k": 15,
+    "norm": 2,
+    "acc": 0.5733333230018616
+  },
+  {
+    "time": 1622520898,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 600,
+    "k": 1,
+    "norm": 2,
+    "acc": 0.46000000834465027
+  },
+  {
+    "time": 1622520995,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 600,
+    "k": 3,
+    "norm": 2,
+    "acc": 0.4866666793823242
+  },
+  {
+    "time": 1622521093,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 600,
+    "k": 5,
+    "norm": 2,
+    "acc": 0.5400000214576721
+  },
+  {
+    "time": 1622521191,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 600,
+    "k": 7,
+    "norm": 2,
+    "acc": 0.5866666436195374
+  },
+  {
+    "time": 1622521288,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 600,
+    "k": 9,
+    "norm": 2,
+    "acc": 0.5666666626930237
+  },
+  {
+    "time": 1622521386,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 600,
+    "k": 11,
+    "norm": 2,
+    "acc": 0.5600000023841858
+  },
+  {
+    "time": 1622521484,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 600,
+    "k": 13,
+    "norm": 2,
+    "acc": 0.54666668176651
+  },
+  {
+    "time": 1622521582,
+    "cls_mode": "knn",
+    "repr_mode": "sift",
+    "data_root": "./data",
+    "num_clusters": 600,
+    "k": 15,
+    "norm": 2,
+    "acc": 0.5333333611488342
+  }
+]
