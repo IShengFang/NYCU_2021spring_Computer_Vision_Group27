@@ -1,36 +1,36 @@
 #!/bin/bash
 # tiny + kNN
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 1
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 1
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 1
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 3
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 3
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 3
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 5
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 5
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 5
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 7
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 7
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 7
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 9
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 9
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 9
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 11
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 11
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 11
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 13
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 13
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 13
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 15
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 15
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 15
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 17
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 17
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 17
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 19
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 19
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 19
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 21
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 21
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 21
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 23
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 23
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 23
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 25
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 25
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 25
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 27
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 27
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 27
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 29
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 29
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 29
-python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --standardize --k 31
+python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --normalize --k 31
 python main.py --cls_mode knn --repr_mode tiny --log_fn tiny_knn.json --k 31
 
 # SIFT + kNN

@@ -4,7 +4,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 1,
     "norm": 2,
     "acc": 0.20000000298023224
@@ -14,7 +14,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 1,
     "norm": 2,
     "acc": 0.1666666716337204
@@ -24,7 +24,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 3,
     "norm": 2,
     "acc": 0.20000000298023224
@@ -34,7 +34,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 3,
     "norm": 2,
     "acc": 0.18666666746139526
@@ -44,7 +44,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 5,
     "norm": 2,
     "acc": 0.19333332777023315
@@ -54,7 +54,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 5,
     "norm": 2,
     "acc": 0.18000000715255737
@@ -64,7 +64,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 7,
     "norm": 2,
     "acc": 0.20666666328907013
@@ -74,7 +74,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 7,
     "norm": 2,
     "acc": 0.20666666328907013
@@ -84,7 +84,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 9,
     "norm": 2,
     "acc": 0.1733333319425583
@@ -94,7 +94,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 9,
     "norm": 2,
     "acc": 0.18666666746139526
@@ -104,7 +104,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 11,
     "norm": 2,
     "acc": 0.19333332777023315
@@ -114,7 +114,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 11,
     "norm": 2,
     "acc": 0.18000000715255737
@@ -124,7 +124,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 13,
     "norm": 2,
     "acc": 0.1733333319425583
@@ -134,7 +134,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 13,
     "norm": 2,
     "acc": 0.1733333319425583
@@ -144,7 +144,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 15,
     "norm": 2,
     "acc": 0.18666666746139526
@@ -154,7 +154,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 15,
     "norm": 2,
     "acc": 0.1733333319425583
@@ -164,7 +164,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 17,
     "norm": 2,
     "acc": 0.18000000715255737
@@ -174,7 +174,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 17,
     "norm": 2,
     "acc": 0.1666666716337204
@@ -184,7 +184,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 19,
     "norm": 2,
     "acc": 0.2266666740179062
@@ -194,7 +194,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 19,
     "norm": 2,
     "acc": 0.1733333319425583
@@ -204,7 +204,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 21,
     "norm": 2,
     "acc": 0.20000000298023224
@@ -214,7 +214,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 21,
     "norm": 2,
     "acc": 0.18000000715255737
@@ -224,7 +224,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 23,
     "norm": 2,
     "acc": 0.20666666328907013
@@ -234,7 +234,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 23,
     "norm": 2,
     "acc": 0.1733333319425583
@@ -244,7 +244,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 25,
     "norm": 2,
     "acc": 0.19333332777023315
@@ -254,7 +254,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 25,
     "norm": 2,
     "acc": 0.1733333319425583
@@ -264,7 +264,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 27,
     "norm": 2,
     "acc": 0.2133333384990692
@@ -274,7 +274,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 27,
     "norm": 2,
     "acc": 0.18000000715255737
@@ -284,7 +284,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 29,
     "norm": 2,
     "acc": 0.20666666328907013
@@ -294,7 +294,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 29,
     "norm": 2,
     "acc": 0.15333333611488342
@@ -304,7 +304,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": true,
+    "normalize": true,
     "k": 31,
     "norm": 2,
     "acc": 0.2133333384990692
@@ -314,7 +314,7 @@
     "repr_mode": "tiny",
     "cls_mode": "knn",
     "img_size": 16,
-    "standardize": false,
+    "normalize": false,
     "k": 31,
     "norm": 2,
     "acc": 0.14666666090488434

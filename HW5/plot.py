@@ -15,23 +15,23 @@ if __name__ == '__main__':
     C = -2
     K = -3
     NUM_CLUSTERS = 3
-    STANDARDIZE = 4
+    NORMALIZE = 4
 
     # tiny_knn
-    # time, repr_mode, cls_mode, img_size, standardize, k, norm, acc
+    # time, repr_mode, cls_mode, img_size, normalize, k, norm, acc
     plt.clf()
     all_data = json.load(open('tiny_knn.json'))
     all_data = serialize(all_data)
 
-    data = all_data[all_data[:,STANDARDIZE]=='True']
+    data = all_data[all_data[:,NORMALIZE]=='True']
     k = data[:,K].astype(np.int32)
     acc = data[:,ACC].astype(np.float32) * 100
-    plt.plot(k, acc, label='w/ standardize', marker='.')
+    plt.plot(k, acc, label='w/ normalize', marker='.')
 
-    data = all_data[all_data[:,STANDARDIZE]=='False']
+    data = all_data[all_data[:,NORMALIZE]=='False']
     k = data[:,K].astype(np.int32)
     acc = data[:,ACC].astype(np.float32) * 100
-    plt.plot(k, acc, label='w/o standardize', marker='x')
+    plt.plot(k, acc, label='w/o normalize', marker='x')
 
     plt.title('Tiny representation + kNN')
     plt.xticks(k)
@@ -53,17 +53,14 @@ if __name__ == '__main__':
     plt.plot(k, acc, label='number of clusters: 150', marker='.')
 
     data = all_data[all_data[:,NUM_CLUSTERS]=='300']
-    k = data[:,K].astype(np.int32)
     acc = data[:,ACC].astype(np.float32) * 100
     plt.plot(k, acc, label='number of clusters: 300', marker='x')
 
     data = all_data[all_data[:,NUM_CLUSTERS]=='450']
-    k = data[:,K].astype(np.int32)
     acc = data[:,ACC].astype(np.float32) * 100
     plt.plot(k, acc, label='number of clusters: 450', marker='o')
 
     data = all_data[all_data[:,NUM_CLUSTERS]=='600']
-    k = data[:,K].astype(np.int32)
     acc = data[:,ACC].astype(np.float32) * 100
     plt.plot(k, acc, label='number of clusters: 600', marker='^')
 
@@ -76,18 +73,33 @@ if __name__ == '__main__':
     plt.savefig('sift_knn.png', dpi=150)
 
     # sift_svm
-    # time, repr_mode, cls_mode, num_clusters, acc
+    # time, repr_mode, cls_mode, num_clusters, c, acc
     plt.clf()
     all_data = json.load(open('sift_svm.json'))
     all_data = serialize(all_data)
 
-    acc = all_data[:,ACC].astype(np.float32) * 100
-    x = np.arange(acc.shape[0])
-    plt.plot(x, acc, marker='.')
+    data = all_data[all_data[:,NUM_CLUSTERS]=='150']
+    c = data[:,C].astype(np.float32)
+    x = np.arange(c.shape[0])
+    acc = data[:,ACC].astype(np.float32) * 100
+    plt.plot(x, acc, label='number of clusters: 150', marker='.')
+
+    data = all_data[all_data[:,NUM_CLUSTERS]=='300']
+    acc = data[:,ACC].astype(np.float32) * 100
+    plt.plot(x, acc, label='number of clusters: 300', marker='x')
+
+    data = all_data[all_data[:,NUM_CLUSTERS]=='450']
+    acc = data[:,ACC].astype(np.float32) * 100
+    plt.plot(x, acc, label='number of clusters: 450', marker='o')
+
+    data = all_data[all_data[:,NUM_CLUSTERS]=='600']
+    acc = data[:,ACC].astype(np.float32) * 100
+    plt.plot(x, acc, label='number of clusters: 600', marker='^')
 
     plt.title('SIFT representation + SVM')
-    plt.xticks(x, all_data[:,NUM_CLUSTERS])
-    plt.xlabel('number of clusters')
+    plt.xticks(x, c)
+    plt.xlabel('C')
     plt.ylabel('Accuracy (%)')
+    plt.legend()
     plt.grid('on')
     plt.savefig('sift_svm.png', dpi=150)
