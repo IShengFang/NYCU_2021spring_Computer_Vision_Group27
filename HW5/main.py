@@ -294,7 +294,7 @@ if __name__ == '__main__':
         tf = [transforms.Resize((args.img_size, args.img_size)), transforms.ToTensor()]
 
         test_dataset = ImageFolder(test_dir, tf)
-        test_loader = DataLoader(train_dataset, batch_size=args.batch_size, 
+        test_loader = DataLoader(test_dataset, batch_size=args.batch_size, 
                                   num_workers=args.n_threads)
     else:
         raise NotImplementedError
