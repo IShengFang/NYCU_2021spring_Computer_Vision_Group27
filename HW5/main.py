@@ -303,6 +303,8 @@ if __name__ == '__main__':
         model = kNN.kNN(args.k, x_train, y_train, args.norm)
         y_pred, acc = model.predict(x_test, y_test)
         print(f'test acc: {acc:.4f}')
+        json_args['k'] = args.k
+        json_args['norm'] = args.norm
         json_args['acc'] = acc.item()
         log.append(json_args)
         json.dump(log, open(log_fn, 'w'), indent=2)
@@ -317,6 +319,7 @@ if __name__ == '__main__':
         res = svm_predict(y_test.numpy(), x_test.numpy(), model, '-q')
         acc = res[1][0] / 100
         print(f'test acc: {acc:.4f}')
+        json_args['c'] = args.c
         json_args['acc'] = acc
         log.append(json_args)
         json.dump(log, open(log_fn, 'w'), indent=2)
