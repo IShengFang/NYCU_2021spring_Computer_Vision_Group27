@@ -24,7 +24,7 @@ import kNN, model
 def sift(dataset):
     sift_descriptor = cv2.SIFT_create(
                             nfeatures=0,
-                            nOctaveLayers=8,
+                            nOctaveLayers=5,
                             contrastThreshold=0.01,
                             edgeThreshold=80,
                             sigma=0.6)
@@ -173,9 +173,6 @@ if __name__ == '__main__':
     parser.add_argument('--k', type=int, default=1)
     parser.add_argument('--norm', type=int, default=2)
 
-    # for model (SVM)
-    parser.add_argument('--c', type=float, default=1.0)
-
     # for model (NN)
     parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--lr', type=float, default=5e-4)
@@ -315,11 +312,10 @@ if __name__ == '__main__':
         x_var = x_train.var().item()
         model = svm_train(
                     y_train.numpy(), x_train.numpy(),
-                    f'-s 0 -t 2 -c {args.c} -g {1/(n_feature*x_var)} -q')
+                    f'-s 0 -t 0 -q')
         res = svm_predict(y_test.numpy(), x_test.numpy(), model, '-q')
         acc = res[1][0] / 100
         print(f'test acc: {acc:.4f}')
-        json_args['c'] = args.c
         json_args['acc'] = acc
         log.append(json_args)
         json.dump(log, open(log_fn, 'w'), indent=2)
