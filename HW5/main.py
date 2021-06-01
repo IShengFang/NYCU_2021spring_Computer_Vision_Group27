@@ -292,6 +292,7 @@ if __name__ == '__main__':
                                    shuffle=True, num_workers=args.n_threads)
 
         tf = [transforms.Resize((args.img_size, args.img_size)), transforms.ToTensor()]
+        tf = transforms.Compose(tf)
 
         test_dataset = ImageFolder(test_dir, tf)
         test_loader = DataLoader(test_dataset, batch_size=args.batch_size, 
