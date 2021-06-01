@@ -164,7 +164,7 @@ if __name__ == '__main__':
     
     # for feature (tiny)
     parser.add_argument('--img_size', type=int, default=16)
-    parser.add_argument('--normalize', action='store_true', default=False)
+    parser.add_argument('--standardize', action='store_true', default=False)
 
     # for feature (sift)
     parser.add_argument('--num_clusters', type=int, default=300)
@@ -234,12 +234,12 @@ if __name__ == '__main__':
         x_test, y_test = next(iter(dataset))
         x_test = x_test.view(x_test.size(0), -1)
 
-        if args.normalize:
+        if args.standardize:
             x_train = (x_train-x_train.mean(1)[:,None]) / (x_train.std(1)[:,None]+1e-6)
             x_test = (x_test-x_test.mean(1)[:,None]) / (x_test.std(1)[:,None]+1e-6)
 
         json_args['img_size'] = args.img_size
-        json_args['normalize'] = args.normalize
+        json_args['standardize'] = args.standardize
 
     elif args.repr_mode == 'sift':
         print('Use SIFT for representation')
