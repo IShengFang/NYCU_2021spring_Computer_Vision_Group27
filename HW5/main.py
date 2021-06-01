@@ -311,11 +311,9 @@ if __name__ == '__main__':
 
     elif args.cls_mode == 'svm':
         print('Use SVM for modeling')
-        n_feature = x_train.size(1)
-        x_var = x_train.var().item()
         model = svm_train(
                     y_train.numpy(), x_train.numpy(),
-                    f'-s 0 -t 2 -c {args.c} -g {1/(n_feature*x_var)} -q')
+                    f'-s 0 -t 0 -c {args.c} -q')
         res = svm_predict(y_test.numpy(), x_test.numpy(), model, '-q')
         acc = res[1][0] / 100
         print(f'test acc: {acc:.4f}')
@@ -334,8 +332,6 @@ if __name__ == '__main__':
             optimizer = torch.optim.Adam(net.fc.parameters(), lr=args.lr, betas=(args.beta_1, args.beta_2))
         else:
             optimizer = torch.optim.Adam(net.parameters(), lr=args.lr, betas=(args.beta_1, args.beta_2))
-
-        writer = SummaryWriter(args.log_dir)
         train(net, writer, train_loader, test_loader, optimizer, 
               criterion, args.epochs, device, args.cpt_num, args)
 
