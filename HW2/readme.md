@@ -15,7 +15,7 @@
 
 ### Overview
 
-A hybrid image is the sum of a low-pass filtered version of the one image and a high-pass filtered version of a second image. There is a free parameter, which can be  tuned for each image pair, which controls how much high frequency to remove from the first image and how much low frequency to leave in the second image. This is called the "cutoff frequency".
+A hybrid image is the sum of a low-pass filtered version of the one image and a high-pass filtered version of a second image. There is a free parameter, which can be tuned for each image pair, which controls how much high frequency to remove from the first image and how much low frequency to leave in the second image. This is called the "cutoff frequency".
 
 ### hybrid.py
 
@@ -65,7 +65,7 @@ An image pyramid is a collection of representations of an image.
 
 ### Overview
 
-Goal: automatically produce a color image from the digitized Prokudin-Gorskii glass plate images with as few visual artifacts as possible.The glass plate images record three exposures of every scene onto a glass plate using a red, a green, and a blue filter. In order to do this, extract the three color channels from the glass plate, then place and align one above the other so that the combination forms a single RGB color image Assume that a simple x,y translation model is sufficient for proper alignment. However,  the full-size glass plate images are very large,  the alignment procedure will need to be fast and efficient.
+Goal: automatically produce a color image from the digitized Prokudin-Gorskii glass plate images with as few visual artifacts as possible. The glass plate images record three exposures of every scene onto a glass plate using a red, a green, and a blue filter. In order to do this, extract the three color channels from the glass plate, then place and align one above the other so that the combination forms a single RGB color image Assume that a simple x,y translation model is sufficient for proper alignment. However,  the full-size glass plate images are very large,  the alignment procedure will need to be fast and efficient.
 
 ### HW2_3.py
 
